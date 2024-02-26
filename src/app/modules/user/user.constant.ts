@@ -1,5 +1,6 @@
-export const UserRoleStatus = ['user'];
+export const UserRoleStatus = ['buyer', 'seller'];
 
 export const USER_ROLE = {
-    user: 'user',
+    buyer: 'buyer',
+    seller: 'seller',
   } as const;

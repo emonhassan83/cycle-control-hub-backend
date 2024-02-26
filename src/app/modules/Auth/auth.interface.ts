@@ -2,7 +2,7 @@ export interface TRegisterUser {
   username: string;
   email: string;
   password: string;
-  role: 'user';
+  role: 'buyer'| 'seller';
 }
 
 export interface TLoginUser {

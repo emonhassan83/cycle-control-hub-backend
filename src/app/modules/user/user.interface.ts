@@ -7,7 +7,7 @@ export interface TUser {
     username: string;
     email: string;
     password: string;
-    role: 'user';
+    role: 'buyer'| 'seller';
     createdAt?: string;
     updatedAt?: string;
 }
