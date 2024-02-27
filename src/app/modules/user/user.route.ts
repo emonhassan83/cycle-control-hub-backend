@@ -13,8 +13,16 @@ router.post(
   UserControllers.registerUser,
 );
 
-router.get('/users/:id', auth(USER_ROLE.seller, USER_ROLE.buyer), UserControllers.getAUser);
+router.get(
+  '/users/:id',
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
+  UserControllers.getAUser,
+);
 
-router.get('/users', auth(USER_ROLE.seller, USER_ROLE.buyer), UserControllers.getAllUsers);
+router.get(
+  '/users',
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
+  UserControllers.getAllUsers,
+);
 
 export const UserRoutes = router;
