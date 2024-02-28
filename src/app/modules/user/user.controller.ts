@@ -8,7 +8,6 @@ const registerUser: RequestHandler = catchAsync(async (req, res) => {
   const userData = req.body;
   const result = await UserService.registerUserIntoDB(userData);
 
-  // send response
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -66,10 +65,23 @@ const updateUserInfo = catchAsync(async (req, res) => {
   });
 });
 
+const deleteAUser = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await UserService.deleteAUserFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "User delete successfully!",
+    data: result,
+  });
+});
+
 export const UserControllers = {
   registerUser,
   getAllUsers,
   getAUser,
   changeUserRole,
   updateUserInfo,
+  deleteAUser,
 };

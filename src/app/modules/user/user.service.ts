@@ -78,10 +78,24 @@ const updateUserInfoFromDB = async (userId: string, payload: any) => {
 
   const updatedUser = await User.findByIdAndUpdate(userId, payload, { new: true });
   if (!updatedUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found and failed to update role!");
+    throw new AppError(httpStatus.NOT_FOUND, "User not found and failed to update!");
   }
 
   return updatedUser;
+};
+
+const deleteAUserFromDB = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  const deleteUser = await User.findByIdAndDelete(userId);
+  if (!deleteUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found and failed to delete!");
+  }
+
+  return deleteUser;
 };
 
 export const UserService = {
@@ -90,4 +104,5 @@ export const UserService = {
   getAUserFromDB,
   changeUserRoleFromDB,
   updateUserInfoFromDB,
+  deleteAUserFromDB,
 };

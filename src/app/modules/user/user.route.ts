@@ -21,8 +21,14 @@ router.patch(
 
 router.put(
   '/user/update-user/:id',
-  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
+  auth(USER_ROLE.admin),
   UserControllers.updateUserInfo,
+);
+
+router.delete(
+  '/user/delete-user/:id',
+  auth(USER_ROLE.admin),
+  UserControllers.deleteAUser,
 );
 
 router.get(
