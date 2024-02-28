@@ -13,6 +13,18 @@ router.post(
   UserControllers.registerUser,
 );
 
+router.patch(
+  '/user/change-role',
+  auth(USER_ROLE.admin),
+  UserControllers.changeUserRole,
+);
+
+router.put(
+  '/user/update-user/:id',
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
+  UserControllers.updateUserInfo,
+);
+
 router.get(
   '/users/:id',
   auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),

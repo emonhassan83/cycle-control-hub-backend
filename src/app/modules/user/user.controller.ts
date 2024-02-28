@@ -41,8 +41,35 @@ const getAUser = catchAsync(async (req, res) => {
   });
 });
 
+const changeUserRole = catchAsync(async (req, res) => {
+  const userData = req.body;
+  const result = await UserService.changeUserRoleFromDB(userData);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "User role update successfully!",
+    data: result,
+  });
+});
+
+const updateUserInfo = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userData = req.body;
+  const result = await UserService.updateUserInfoFromDB(id, userData);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "User info update successfully!",
+    data: result,
+  });
+});
+
 export const UserControllers = {
   registerUser,
   getAllUsers,
   getAUser,
+  changeUserRole,
+  updateUserInfo,
 };
