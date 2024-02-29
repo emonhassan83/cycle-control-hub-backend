@@ -21,6 +21,18 @@ router.put(
   ServiceCategoryControllers.updateBikeServiceCategory,
 );
 
+router.patch(
+  '/assign-coupon/:id',
+  auth(USER_ROLE.admin, USER_ROLE.seller),
+  ServiceCategoryControllers.assignCouponToBikeService,
+);
+
+router.patch(
+  '/remove-coupon/:id',
+  auth(USER_ROLE.admin, USER_ROLE.seller),
+  ServiceCategoryControllers.deleteCouponToBikeService,
+);
+
 router.delete(
   '/delete-service-category/:id',
   auth(USER_ROLE.admin, USER_ROLE.seller),

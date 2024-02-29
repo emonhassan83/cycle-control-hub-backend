@@ -16,6 +16,10 @@ const bikeServiceCategorySchema = new Schema<TBikeServiceCategory>(
       type: String,
       required: true
     },
+    coupon: {
+      type: Schema.Types.ObjectId,
+      ref: 'Coupon',
+    },
     serviceProvider: {
       type: Schema.Types.ObjectId,
       ref: 'User',

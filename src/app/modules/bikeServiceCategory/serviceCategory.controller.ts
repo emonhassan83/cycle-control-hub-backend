@@ -51,6 +51,31 @@ const updateBikeServiceCategory = catchAsync(async (req, res) => {
   });
 });
 
+const assignCouponToBikeService = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const {coupon} = req.body;
+  const result = await ServiceCategoryService.assignCouponToBikeServiceFromDB(id, coupon);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Assign coupon to bike service successfully!",
+    data: result,
+  });
+});
+
+const deleteCouponToBikeService = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await ServiceCategoryService.deleteCouponToBikeServiceFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Delete coupon to bike service successfully!",
+    data: result,
+  });
+});
+
 const deleteABikeServiceCategory = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await ServiceCategoryService.deleteABikeServiceCategoryFromDB(id);
@@ -68,5 +93,7 @@ export const ServiceCategoryControllers = {
   getAllBikeServiceCategories,
   getABikeServiceCategory,
   updateBikeServiceCategory,
+  assignCouponToBikeService,
+  deleteCouponToBikeService,
   deleteABikeServiceCategory,
 };
