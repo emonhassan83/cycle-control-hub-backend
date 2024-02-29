@@ -13,10 +13,16 @@ const couponSchema = new Schema<TCoupon>(
       type: Date,
       required: true,
     },
-    discount: {
+    discountType: {
+      type: String,
+      enum: ['percentage', 'fixed'],
+      required: true,
+    },
+    discountAmount: {
       type: Number,
       required: true,
     },
+    applicableBikeIds: [{ type: String, required: true }],
   },
   {
     timestamps: true,

@@ -28,15 +28,15 @@ router.delete(
 );
 
 router.get(
-  '/coupon/:id',
-  auth(USER_ROLE.admin),
-  CouponControllers.getACoupon,
-);
-
-router.get(
   '/all-coupons',
   auth(USER_ROLE.admin),
   CouponControllers.getAllCoupons,
+);
+
+router.get(
+  '/:id',
+  auth(USER_ROLE.admin),
+  CouponControllers.getACoupon,
 );
 
 export const CouponRoutes = router;
