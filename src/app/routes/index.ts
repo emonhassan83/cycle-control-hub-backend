@@ -5,6 +5,7 @@ import { BikeRoutes } from '../modules/bikeManagement/bike.route';
 import { BuyerRoutes } from '../modules/buyerManagement/buyerManagement.route';
 import { CouponRoutes } from '../modules/coupon/coupon.route';
 import { ServiceCategoryRoutes } from '../modules/bikeServiceCategory/serviceCategory.route';
+import { ServiceRoutes } from '../modules/bikeService/bikeService.route';
 
 const router = Router();
 
@@ -30,8 +31,12 @@ const moduleRoutes = [
     route: CouponRoutes,
   },
   {
-    path: '/service',
+    path: '/service-category',
     route: ServiceCategoryRoutes,
+  },
+  {
+    path: '/service',
+    route: ServiceRoutes,
   },
 ];
 

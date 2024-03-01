@@ -1,9 +1,28 @@
-import { Types } from "mongoose";
+import { z } from 'zod';
 
-export type MaintenanceHistory = {
-    bikeId: Types.ObjectId;
-    service: Types.ObjectId;
-    lastServicing: Date;
-    nextServicing: Date;
-    notes: string;
-  }
+const createServiceHistoryValidationSchema = z.object({
+  body: z.object({
+    bike: z.string(),
+    service: z.string(),
+    lastServicingDate: z.date(),
+    nextServicingDate: z.date(),
+    maintenanceRecords: z.number().optional(),
+    notes: z.string(),
+  }),
+});
+
+const updateServiceHistoryValidationSchema = z.object({
+  body: z.object({
+    bike: z.string().optional(),
+    service: z.string().optional(),
+    lastServicingDate: z.date().optional(),
+    nextServicingDate: z.date().optional(),
+    maintenanceRecords: z.number().optional(),
+    notes: z.string().optional(),
+  }),
+});
+
+export const BikeServiceHistoryValidation = {
+  createServiceHistoryValidationSchema,
+  updateServiceHistoryValidationSchema,
+};
