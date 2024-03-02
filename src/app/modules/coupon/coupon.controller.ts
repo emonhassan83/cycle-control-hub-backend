@@ -16,13 +16,14 @@ const createCoupon = catchAsync(async (req, res) => {
 });
 
 const getAllCoupons = catchAsync(async (req, res) => {
-  const result = await CouponService.getAllCouponFromDB();
+  const result = await CouponService.getAllCouponFromDB(req.query);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: "Coupons retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

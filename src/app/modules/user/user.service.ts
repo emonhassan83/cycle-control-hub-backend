@@ -5,6 +5,7 @@ import AppError from '../../errors/AppError';
 import { createToken } from '../Auth/auth.utils';
 import { TUser } from './user.interface';
 import { User } from './user.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const registerUserIntoDB = async (payload: TUser) => {
   const result = await User.create(payload);
@@ -33,13 +34,25 @@ const registerUserIntoDB = async (payload: TUser) => {
   };
 };
 
-const getAllUsersFromDB = async () => {
-  const users = await User.find();
-  if (!users) {
+const getAllUsersFromDB = async (query: Record<string, unknown>) => {
+  const usersQuery = new QueryBuilder(User.find(), query)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+    const result = await usersQuery.modelQuery;
+    const meta = await usersQuery.countTotal();
+
+  if (!usersQuery) {
     throw new AppError(httpStatus.NOT_FOUND, "Users not found!");
   }
-  return users;
-};
+  return {
+    meta,
+    result,
+  };
+}
+
 
 const getAUserFromDB = async (id: string) => {
   const user = await User.findById(id);
