@@ -11,6 +11,14 @@ const serviceHistorySchema = new Schema<TServiceHistory>(
         type: Schema.Types.ObjectId,
         ref: 'ServiceCategory'
     },
+    serviceProvider: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    serviceReceiver: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     lastServicingDate: {
       type: Date,
       required: true
@@ -26,6 +34,14 @@ const serviceHistorySchema = new Schema<TServiceHistory>(
     notes: {
         type: String,
         required: true
+    },
+    isConfirmed: {
+        type: Boolean,
+        default: false
+    },
+    isPayed: {
+        type: Boolean,
+        default: false
     },
   },
   {

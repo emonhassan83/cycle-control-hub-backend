@@ -5,12 +5,14 @@ import { ServiceHistory } from './bikeService.model';
 import { TServiceHistory } from './bikeService.interface';
 import { Buyer } from '../buyerManagement/buyerManagement.model';
 import { ServiceCategory } from '../bikeServiceCategory/serviceCategory.model';
+import { JwtPayload } from 'jsonwebtoken';
+import { User } from '../user/user.model';
 
-const requestAServiceIntoDB = async (payload: TServiceHistory) => {
+const requestAServiceIntoDB = async (userData: JwtPayload, payload: TServiceHistory) => {
   const { bike, service } = payload;
 
   //* Check if the bike dose not exists
-  const purchaseBike = await Buyer.findOne({ bike });
+  const purchaseBike = await Buyer.findOne({ _id: bike });
   if (!purchaseBike) {
     throw new AppError(httpStatus.CONFLICT, `You can only request service in purchase bike`);
   }
@@ -18,10 +20,18 @@ const requestAServiceIntoDB = async (payload: TServiceHistory) => {
   //* Check if the bike dose not exists
   const bikeService = await ServiceCategory.findOne({ _id: service });
   if (!bikeService) {
-    throw new AppError(httpStatus.CONFLICT, `You can only request service in purchase bike`);
+    throw new AppError(httpStatus.CONFLICT, `This bike service is not available`);
   }
+  const serviceProvider = bikeService.serviceProvider;
+  const serviceReceiver = userData._id;
 
-  const result = await ServiceHistory.create(payload);
+  const serviceData = {
+    ...payload,
+    serviceProvider,
+    serviceReceiver
+  }
+  
+  const result = await ServiceHistory.create(serviceData);
   if (!result) {
     throw new AppError(httpStatus.CONFLICT, 'Service request is not created!');
   }
@@ -30,11 +40,47 @@ const requestAServiceIntoDB = async (payload: TServiceHistory) => {
 };
 
 const confirmAServiceIntoDB = async (serviceId: string) => {
-  console.log(serviceId);
+  const bikeService = await ServiceHistory.findOne({_id: serviceId});
+  if (!bikeService) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Service not found!');
+  }
+
+  const confirmService = await ServiceHistory.findByIdAndUpdate(
+    serviceId,
+     { isConfirmed: true },
+    { new: true },
+  );
+  
+  if (!confirmService) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Service not found and failed to update!',
+    );
+  }
+
+  return confirmService;
 };
 
 const cancelAServiceIntoDB = async (serviceId: string) => {
-  console.log(serviceId);
+  const bikeService = await ServiceHistory.findOne({_id: serviceId});
+  if (!bikeService) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Service not found!');
+  }
+
+  const confirmService = await ServiceHistory.findByIdAndUpdate(
+    serviceId,
+     { isConfirmed: false },
+    { new: true },
+  );
+  
+  if (!confirmService) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Service not found and failed to update!',
+    );
+  }
+
+  return confirmService;
 };
 
 const getAllServicesFromDB = async () => {
@@ -44,6 +90,21 @@ const getAllServicesFromDB = async () => {
   }
 
   return services;
+};
+
+const getMyServicesFromDB = async ( userData: JwtPayload, id: string) => {
+  //* check if the user exist in database
+  const user = await User.isUserExistsByUserEmail(userData.email);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
+
+  const service = await ServiceHistory.findById(id);
+  if (!service) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Service not found!');
+  }
+
+  return service;
 };
 
 const getAServiceFromDB = async (id: string) => {
@@ -56,7 +117,7 @@ const getAServiceFromDB = async (id: string) => {
 };
 
 const updateAServiceFromDB = async (serviceId: string, payload: any) => {
-  const bikeService = await ServiceHistory.findById(serviceId);
+  const bikeService = await ServiceHistory.findOne({_id: serviceId});
   if (!bikeService) {
     throw new AppError(httpStatus.NOT_FOUND, 'Service not found!');
   }
@@ -96,6 +157,7 @@ export const ServiceHistoryService = {
   confirmAServiceIntoDB,
   cancelAServiceIntoDB,
   getAllServicesFromDB,
+  getMyServicesFromDB,
   getAServiceFromDB,
   updateAServiceFromDB,
   deleteAServiceFromDB,

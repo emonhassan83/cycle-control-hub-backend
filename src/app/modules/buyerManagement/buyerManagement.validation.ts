@@ -12,6 +12,7 @@ const buyingBikeValidationSchema = z.object({
     seller: z.string(),
     bike: z.string(),
     isConfirmed: z.boolean().optional(),
+    isPayed: z.boolean().optional(),
   }),
 });
 

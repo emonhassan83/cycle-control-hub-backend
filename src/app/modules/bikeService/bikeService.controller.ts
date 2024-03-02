@@ -5,7 +5,8 @@ import { ServiceHistoryService } from "./bikeService.service";
 
 const requestAService = catchAsync(async (req, res) => {
   const coupon = req.body;
-  const result = await ServiceHistoryService.requestAServiceIntoDB(coupon);
+  const user = req.user;
+  const result = await ServiceHistoryService.requestAServiceIntoDB(user, coupon);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -46,6 +47,18 @@ const getAllServices = catchAsync(async (req, res) => {
     success: true,
     statusCode: 200,
     message: "Get all services retrieved successfully!",
+    data: result,
+  });
+});
+
+const getMyServices = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await ServiceHistoryService.getMyServicesFromDB(req.user, id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Get my all services retrieved successfully!",
     data: result,
   });
 });
@@ -92,6 +105,7 @@ export const ServiceHistoryControllers = {
   confirmAService,
   cancelAService,
   getAllServices,
+  getMyServices,
   getAService,
   updateAService,
   deleteAService

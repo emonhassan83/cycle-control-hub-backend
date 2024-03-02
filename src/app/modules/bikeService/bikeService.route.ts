@@ -10,14 +10,14 @@ const router = express.Router();
 
 router.post(
   '/request-service',
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.buyer),
   zodValidationRequest(BikeServiceHistoryValidation.createServiceHistoryValidationSchema),
   ServiceHistoryControllers.requestAService,
 );
 
 router.put(
   '/update-service/:id',
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.buyer),
   zodValidationRequest(BikeServiceHistoryValidation.updateServiceHistoryValidationSchema),
   ServiceHistoryControllers.updateAService,
 );
@@ -43,11 +43,17 @@ router.delete(
 router.get(
   '/all-services',
   auth(USER_ROLE.admin, USER_ROLE.seller),
-  ServiceHistoryControllers.getAService,
+  ServiceHistoryControllers.getAllServices,
 );
 
 router.get(
-  '/service/:id',
+  '/all-my-services',
+  auth(USER_ROLE.admin, USER_ROLE.seller),
+  ServiceHistoryControllers.getMyServices,
+);
+
+router.get(
+  '/:id',
   auth(USER_ROLE.admin, USER_ROLE.seller),
   ServiceHistoryControllers.getAService,
 );
