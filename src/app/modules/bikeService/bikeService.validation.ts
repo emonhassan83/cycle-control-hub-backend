@@ -4,6 +4,7 @@ const createServiceHistoryValidationSchema = z.object({
   body: z.object({
     bike: z.string(),
     service: z.string(),
+    serviceBill: z.number().optional(),
     lastServicingDate: z.string().refine((value) => {
       const date = new Date(value);
       return !isNaN(date.getTime());

@@ -85,17 +85,16 @@ const assignCouponToBikeServiceFromDB = async (
   }
 
   //* Check if the dose not exist coupon in database
-  const existCoupon = await Coupon.findOne( {_id: coupon} );
+  const existCoupon = await Coupon.findOne({ _id: coupon });
   if (!existCoupon) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      `This coupon  is no exist!`,
-    );
+    throw new AppError(httpStatus.NOT_FOUND, `This coupon  is no exist!`);
   }
 
   //* Check if the already assign coupon is exist in database
-  const alreadyAssignCoupon = await ServiceCategory.findOne( {coupon} );
-  
+  const alreadyAssignCoupon = await ServiceCategory.findOne({
+    $and: [{ _id: categoryId }, { coupon }],
+  });
+
   if (alreadyAssignCoupon) {
     throw new AppError(
       httpStatus.CONFLICT,
@@ -118,9 +117,7 @@ const assignCouponToBikeServiceFromDB = async (
   return assignCoupon;
 };
 
-const deleteCouponToBikeServiceFromDB = async (
-  categoryId: string
-) => {
+const deleteCouponToBikeServiceFromDB = async (categoryId: string) => {
   const serviceCategory = await ServiceCategory.findById(categoryId);
   if (!serviceCategory) {
     throw new AppError(httpStatus.NOT_FOUND, 'Service category not found!');

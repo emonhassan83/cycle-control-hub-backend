@@ -19,6 +19,10 @@ const serviceHistorySchema = new Schema<TServiceHistory>(
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    serviceBill: {
+      type: Number,
+      required: true
+    },
     lastServicingDate: {
       type: Date,
       required: true

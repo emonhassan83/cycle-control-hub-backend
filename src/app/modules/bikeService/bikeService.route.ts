@@ -34,6 +34,12 @@ router.patch(
   ServiceHistoryControllers.cancelAService,
 );
 
+router.patch(
+  '/payment-service/:id',
+  auth(USER_ROLE.buyer),
+  ServiceHistoryControllers.paymentAService,
+);
+
 router.delete(
   '/delete-service/:id',
   auth(USER_ROLE.admin, USER_ROLE.seller),
@@ -48,7 +54,7 @@ router.get(
 
 router.get(
   '/all-my-services',
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   ServiceHistoryControllers.getMyServices,
 );
 

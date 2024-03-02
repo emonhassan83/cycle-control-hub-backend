@@ -52,8 +52,8 @@ const getAllServices = catchAsync(async (req, res) => {
 });
 
 const getMyServices = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await ServiceHistoryService.getMyServicesFromDB(req.user, id);
+  const user = req.user;
+  const result = await ServiceHistoryService.getMyServicesFromDB(user);
 
   sendResponse(res, {
     success: true,
@@ -71,6 +71,18 @@ const getAService = catchAsync(async (req, res) => {
     success: true,
     statusCode: 200,
     message: "Get a service retrieved successfully!",
+    data: result,
+  });
+});
+
+const paymentAService = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await ServiceHistoryService.paymentAServiceFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Payment a service retrieved successfully!",
     data: result,
   });
 });
@@ -107,6 +119,7 @@ export const ServiceHistoryControllers = {
   getAllServices,
   getMyServices,
   getAService,
+  paymentAService,
   updateAService,
   deleteAService
 };

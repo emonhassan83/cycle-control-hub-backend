@@ -5,6 +5,7 @@ export type TServiceHistory = {
     service: Types.ObjectId,
     serviceProvider: Types.ObjectId,
     serviceReceiver: Types.ObjectId,
+    serviceBill: number,
     lastServicingDate: Date,
     nextServicingDate: Date,
     maintenanceRecords: number,
