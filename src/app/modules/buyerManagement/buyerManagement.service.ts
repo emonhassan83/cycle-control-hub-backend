@@ -82,7 +82,7 @@ const viewPurchaseBikeIntoDB = async (
 
   const userEmail = user?.email;
   const bikeQuery = new QueryBuilder(
-    Buyer.find({ buyerEmail: userEmail }).populate('seller').populate('bike'),
+    Buyer.find({ buyerEmail: userEmail }).populate('seller bike'),
     query,
   )
     .search(BikeSearchableFields)

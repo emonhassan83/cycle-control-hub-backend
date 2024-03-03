@@ -5,7 +5,7 @@ const serviceHistorySchema = new Schema<TServiceHistory>(
   {
     bike: {
       type: Schema.Types.ObjectId,
-      ref: 'Buyer'
+      ref: 'Bike'
     },
     service: {
         type: Schema.Types.ObjectId,

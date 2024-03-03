@@ -13,7 +13,7 @@ const createCouponValidationSchema = z.object({
 const updateCouponValidationSchema = z.object({
   body: z.object({
     name: z.string().min(5).max(255).optional(),
-    expiry: z.date().optional(),
+    expiry: z.string().optional(),
     discountType: z.enum(['percentage', 'fixed']).optional(),
     discountAmount: z.number().positive().optional(),
     applicableBikeIds: z.array(z.string()).optional(),

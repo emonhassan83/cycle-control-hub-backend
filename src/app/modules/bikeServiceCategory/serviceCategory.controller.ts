@@ -16,13 +16,14 @@ const createBikeServiceCategory = catchAsync(async (req, res) => {
 });
 
 const getAllBikeServiceCategories = catchAsync(async (req, res) => {
-  const result = await ServiceCategoryService.getAllBikeServiceCategoriesFromDB();
+  const result = await ServiceCategoryService.getAllBikeServiceCategoriesFromDB(req.query);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: "Bike all service categories retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

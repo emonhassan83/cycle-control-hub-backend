@@ -8,6 +8,7 @@ import { ServiceCategory } from '../bikeServiceCategory/serviceCategory.model';
 import { JwtPayload } from 'jsonwebtoken';
 import { User } from '../user/user.model';
 import { Coupon } from '../coupon/coupon.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const requestAServiceIntoDB = async (
   userData: JwtPayload,
@@ -95,16 +96,26 @@ const cancelAServiceIntoDB = async (serviceId: string) => {
   return confirmService;
 };
 
-const getAllServicesFromDB = async () => {
-  const services = await ServiceHistory.find();
-  if (!services) {
+const getAllServicesFromDB = async (query: Record<string, unknown>) => {
+  const servicesQuery = new QueryBuilder(ServiceHistory.find().populate('bike service serviceProvider serviceReceiver'), query)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await servicesQuery.modelQuery;
+  const meta = await servicesQuery.countTotal();
+  if (!servicesQuery) {
     throw new AppError(httpStatus.NOT_FOUND, 'Services not found!');
   }
 
-  return services;
+  return {
+    meta,
+    result,
+  };
 };
 
-const getMyServicesFromDB = async (userData: JwtPayload) => {
+const getMyServicesFromDB = async (query: Record<string, unknown>, userData: JwtPayload) => {
   //* check if the user exist in database
   const user = await User.isUserExistsByUserEmail(userData.email);
   if (!user) {
@@ -112,24 +123,28 @@ const getMyServicesFromDB = async (userData: JwtPayload) => {
   }
   const userId = userData._id;
 
-  const service = await ServiceHistory.find({
+  const servicesQuery = new QueryBuilder(ServiceHistory.find({
     $or: [{ serviceReceiver: userId }, { serviceProvider: userId }],
-  });
-  if (!service) {
+  }).populate('bike service serviceProvider serviceReceiver'), query)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+    const result = await servicesQuery.modelQuery;
+    const meta = await servicesQuery.countTotal();
+
+  if (!servicesQuery) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'No services found for this user!',
     );
   }
 
-  const populatedServices = await ServiceHistory.populate(service, [
-    { path: 'bike' },
-    { path: 'service' },
-    { path: 'serviceProvider' },
-    { path: 'serviceReceiver' },
-  ]);
-
-  return populatedServices;
+  return {
+    meta,
+    result,
+  };
 };
 
 const getAServiceFromDB = async (id: string) => {

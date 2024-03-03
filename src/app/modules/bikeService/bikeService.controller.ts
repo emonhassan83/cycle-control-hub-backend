@@ -41,25 +41,27 @@ const cancelAService = catchAsync(async (req, res) => {
 });
 
 const getAllServices = catchAsync(async (req, res) => {
-  const result = await ServiceHistoryService.getAllServicesFromDB();
+  const result = await ServiceHistoryService.getAllServicesFromDB(req.query);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: "Get all services retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 
 const getMyServices = catchAsync(async (req, res) => {
   const user = req.user;
-  const result = await ServiceHistoryService.getMyServicesFromDB(user);
+  const result = await ServiceHistoryService.getMyServicesFromDB(req.query, user);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: "Get my all services retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

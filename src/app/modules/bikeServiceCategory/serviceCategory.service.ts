@@ -5,6 +5,7 @@ import { TBikeServiceCategory } from './serviceCategory.interface';
 import { ServiceCategory } from './serviceCategory.model';
 import { User } from '../user/user.model';
 import { Coupon } from '../coupon/coupon.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createBikeServiceCategoryIntoDB = async (
   payload: TBikeServiceCategory,
@@ -34,12 +35,23 @@ const createBikeServiceCategoryIntoDB = async (
   return serviceCategory;
 };
 
-const getAllBikeServiceCategoriesFromDB = async () => {
-  const serviceCategories = await ServiceCategory.find();
-  if (!serviceCategories) {
+const getAllBikeServiceCategoriesFromDB = async (query: Record<string, unknown>) => {
+  const serviceCategoriesQuery = new QueryBuilder(ServiceCategory.find().populate('coupon serviceProvider'), query)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await serviceCategoriesQuery.modelQuery;
+  const meta = await serviceCategoriesQuery.countTotal();
+  if (!serviceCategoriesQuery) {
     throw new AppError(httpStatus.NOT_FOUND, 'Service categories not found!');
   }
-  return serviceCategories;
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const getABikeServiceCategoryFromDB = async (id: string) => {
