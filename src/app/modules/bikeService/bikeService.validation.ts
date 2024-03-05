@@ -15,7 +15,7 @@ const createServiceHistoryValidationSchema = z.object({
     }, { message: 'Invalid date format' }),
     maintenanceRecords: z.number().optional(),
     notes: z.string(),
-    isConfirmed: z.boolean().optional(),
+    status: z.string().optional(),
     isPayed: z.boolean().optional(),
   }),
 });

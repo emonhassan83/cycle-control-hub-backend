@@ -39,9 +39,9 @@ const serviceHistorySchema = new Schema<TServiceHistory>(
         type: String,
         required: true
     },
-    isConfirmed: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        default: "pending"
     },
     isPayed: {
         type: Boolean,

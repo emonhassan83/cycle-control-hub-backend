@@ -10,6 +10,6 @@ export type TServiceHistory = {
     nextServicingDate: Date,
     maintenanceRecords: number,
     notes: string,
-    isConfirmed: boolean,
+    status: string,
     isPayed: boolean,
   }

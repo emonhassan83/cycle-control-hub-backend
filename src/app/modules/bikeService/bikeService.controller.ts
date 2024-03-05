@@ -77,6 +77,18 @@ const getAService = catchAsync(async (req, res) => {
   });
 });
 
+const applyCouponAService = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await ServiceHistoryService.applyCouponAServiceFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Apply Coupon in a service successfully!",
+    data: result,
+  });
+});
+
 const paymentAService = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await ServiceHistoryService.paymentAServiceFromDB(id);
@@ -121,6 +133,7 @@ export const ServiceHistoryControllers = {
   getAllServices,
   getMyServices,
   getAService,
+  applyCouponAService,
   paymentAService,
   updateAService,
   deleteAService

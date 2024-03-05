@@ -41,7 +41,7 @@ router.delete(
 
 router.get(
   '/all-service-category',
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   ServiceCategoryControllers.getAllBikeServiceCategories,
 );
 

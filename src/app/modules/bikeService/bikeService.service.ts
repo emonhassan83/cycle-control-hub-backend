@@ -3,12 +3,12 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { ServiceHistory } from './bikeService.model';
 import { TServiceHistory } from './bikeService.interface';
-import { Buyer } from '../buyerManagement/buyerManagement.model';
 import { ServiceCategory } from '../bikeServiceCategory/serviceCategory.model';
 import { JwtPayload } from 'jsonwebtoken';
 import { User } from '../user/user.model';
 import { Coupon } from '../coupon/coupon.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { Bike } from '../bikeManagement/bike.model';
 
 const requestAServiceIntoDB = async (
   userData: JwtPayload,
@@ -17,12 +17,9 @@ const requestAServiceIntoDB = async (
   const { bike, service } = payload;
 
   //* Check if the bike dose not exists
-  const purchaseBike = await Buyer.findOne({ _id: bike });
+  const purchaseBike = await Bike.findOne({ _id: bike });
   if (!purchaseBike) {
-    throw new AppError(
-      httpStatus.CONFLICT,
-      `You can only request service in purchase bike`,
-    );
+    throw new AppError(httpStatus.CONFLICT, `This bike is not found!`);
   }
 
   //* Check if the bike dose not exists
@@ -60,7 +57,7 @@ const confirmAServiceIntoDB = async (serviceId: string) => {
 
   const confirmService = await ServiceHistory.findByIdAndUpdate(
     serviceId,
-    { isConfirmed: true },
+    { status: 'confirmed' },
     { new: true },
   );
 
@@ -82,7 +79,7 @@ const cancelAServiceIntoDB = async (serviceId: string) => {
 
   const confirmService = await ServiceHistory.findByIdAndUpdate(
     serviceId,
-    { isConfirmed: false },
+    { status: 'denied' },
     { new: true },
   );
 
@@ -97,7 +94,12 @@ const cancelAServiceIntoDB = async (serviceId: string) => {
 };
 
 const getAllServicesFromDB = async (query: Record<string, unknown>) => {
-  const servicesQuery = new QueryBuilder(ServiceHistory.find().populate('bike service serviceProvider serviceReceiver'), query)
+  const servicesQuery = new QueryBuilder(
+    ServiceHistory.find().populate(
+      'bike service serviceProvider serviceReceiver',
+    ),
+    query,
+  )
     .filter()
     .sort()
     .paginate()
@@ -115,7 +117,10 @@ const getAllServicesFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
-const getMyServicesFromDB = async (query: Record<string, unknown>, userData: JwtPayload) => {
+const getMyServicesFromDB = async (
+  query: Record<string, unknown>,
+  userData: JwtPayload,
+) => {
   //* check if the user exist in database
   const user = await User.isUserExistsByUserEmail(userData.email);
   if (!user) {
@@ -123,16 +128,19 @@ const getMyServicesFromDB = async (query: Record<string, unknown>, userData: Jwt
   }
   const userId = userData._id;
 
-  const servicesQuery = new QueryBuilder(ServiceHistory.find({
-    $or: [{ serviceReceiver: userId }, { serviceProvider: userId }],
-  }).populate('bike service serviceProvider serviceReceiver'), query)
+  const servicesQuery = new QueryBuilder(
+    ServiceHistory.find({
+      $or: [{ serviceReceiver: userId }, { serviceProvider: userId }],
+    }).populate('bike service serviceProvider serviceReceiver service.coupon'),
+    query,
+  )
     .filter()
     .sort()
     .paginate()
     .fields();
 
-    const result = await servicesQuery.modelQuery;
-    const meta = await servicesQuery.countTotal();
+  const result = await servicesQuery.modelQuery;
+  const meta = await servicesQuery.countTotal();
 
   if (!servicesQuery) {
     throw new AppError(
@@ -156,7 +164,7 @@ const getAServiceFromDB = async (id: string) => {
   return service;
 };
 
-const paymentAServiceFromDB = async (id: string) => {
+const applyCouponAServiceFromDB = async (id: string) => {
   const service = await ServiceHistory.findById(id).populate('service');
   if (!service) {
     throw new AppError(httpStatus.NOT_FOUND, 'Service not found!');
@@ -164,7 +172,7 @@ const paymentAServiceFromDB = async (id: string) => {
 
   const couponId = (service?.service as any)?.coupon;
   let price = (service?.service as any)?.price;
-  
+
   if (couponId) {
     const coupon = await Coupon.findOne({ _id: couponId });
     if (coupon) {
@@ -176,8 +184,32 @@ const paymentAServiceFromDB = async (id: string) => {
     }
   }
 
-  // Optionally, update the service document with the new price
+  //*update the service document with the new price
+  const serviceBill = service.serviceBill;
+  const maintenanceRecords = service.maintenanceRecords || 1;
+  const extraDiscountPercentage = Math.min(maintenanceRecords * 5, 50);
+  let extraDiscount = (serviceBill * extraDiscountPercentage) / 100;
+
+  extraDiscount = parseFloat(extraDiscount.toFixed(2));
+
+  //* Apply extra discount by maintenanceRecords
+  price -= extraDiscount;
+  price = parseFloat(price.toFixed(2));
+
+  //* Update the service document with the new price and save new price
   service.serviceBill = price;
+  await service.save();
+
+  return service;
+};
+
+const paymentAServiceFromDB = async (id: string) => {
+  const service = await ServiceHistory.findById(id).populate('service');
+  if (!service) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Service not found!');
+  }
+
+  //* Update the service document with the database
   service.maintenanceRecords += 1;
   service.isPayed = true;
   await service.save();
@@ -232,6 +264,7 @@ export const ServiceHistoryService = {
   getAllServicesFromDB,
   getMyServicesFromDB,
   getAServiceFromDB,
+  applyCouponAServiceFromDB,
   paymentAServiceFromDB,
   updateAServiceFromDB,
   deleteAServiceFromDB,

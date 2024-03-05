@@ -35,6 +35,12 @@ router.patch(
 );
 
 router.patch(
+  '/apply-coupon/:id',
+  auth(USER_ROLE.buyer),
+  ServiceHistoryControllers.applyCouponAService,
+);
+
+router.patch(
   '/payment-service/:id',
   auth(USER_ROLE.buyer),
   ServiceHistoryControllers.paymentAService,
@@ -42,13 +48,13 @@ router.patch(
 
 router.delete(
   '/delete-service/:id',
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   ServiceHistoryControllers.deleteAService,
 );
 
 router.get(
   '/all-services',
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin),
   ServiceHistoryControllers.getAllServices,
 );
 
@@ -60,7 +66,7 @@ router.get(
 
 router.get(
   '/:id',
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   ServiceHistoryControllers.getAService,
 );
 
