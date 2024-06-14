@@ -7,7 +7,11 @@ export interface TUser {
     username: string;
     email: string;
     password: string;
+    needsPasswordChange: boolean;
+    passwordChangedAt?: Date;
     role: 'admin'| 'buyer'| 'seller';
+    status: 'active' | 'blocked';
+    isDeleted: boolean;
     createdAt?: string;
     updatedAt?: string;
 }

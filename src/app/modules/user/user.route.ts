@@ -8,31 +8,31 @@ import { USER_ROLE } from './user.constant';
 const router = express.Router();
 
 router.post(
-  '/auth/register',
+  '/register',
   zodValidationRequest(UserValidation.UserValidationSchema),
   UserControllers.registerUser,
 );
 
 router.patch(
-  '/user/change-role',
+  '/change-role',
   auth(USER_ROLE.admin),
   UserControllers.changeUserRole,
 );
 
 router.put(
-  '/user/update-user/:id',
+  '/update-user/:id',
   auth(USER_ROLE.admin),
   UserControllers.updateUserInfo,
 );
 
 router.delete(
-  '/user/delete-user/:id',
+  '/delete-user/:id',
   auth(USER_ROLE.admin),
   UserControllers.deleteAUser,
 );
 
 router.get(
-  '/users/:id',
+  '/:id',
   auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   UserControllers.getAUser,
 );

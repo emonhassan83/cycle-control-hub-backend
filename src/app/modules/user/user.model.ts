@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import bcrypt from "bcrypt";
-import config from "../../config";
-import { UserRoleStatus } from "./user.constant";
-import { TUser, UserModel } from "./user.interface";
-import { Schema, model } from "mongoose";
+import bcrypt from 'bcrypt';
+import config from '../../config';
+import { UserRoleStatus, UserStatus } from './user.constant';
+import { TUser, UserModel } from './user.interface';
+import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema<TUser, UserModel>(
   {
@@ -20,34 +20,50 @@ const userSchema = new Schema<TUser, UserModel>(
       type: String,
       required: true,
     },
+    needsPasswordChange: {
+      type: Boolean,
+      default: true,
+    },
+    passwordChangedAt: {
+      type: Date,
+    },
     role: {
       type: String,
       enum: UserRoleStatus,
     },
+    status: {
+      type: String,
+      enum: UserStatus,
+      default: 'active',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // pre save middleware / hooks
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
   const user = this; //this refers to document
   user.password = await bcrypt.hash(
     user.password,
-    Number(config.bcrypt_salt_rounds)
+    Number(config.bcrypt_salt_rounds),
   );
   next();
 });
 
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
   const isUserExist = await User.findOne({
     email: this.email,
   });
 
   if (isUserExist) {
     throw new Error(
-      "This user is already exist, changes email if you create new user"
+      'This user is already exist, changes email if you create new user',
     );
   }
 
@@ -64,9 +80,9 @@ userSchema.statics.isUserExistsByEmail = async function (email: string) {
 
 userSchema.statics.isPasswordMatched = async function (
   plainTextPassword,
-  hashedPassword
+  hashedPassword,
 ) {
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
 
-export const User = model<TUser, UserModel>("User", userSchema);
+export const User = model<TUser, UserModel>('User', userSchema);
