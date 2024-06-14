@@ -20,7 +20,7 @@ router.post(
     USER_ROLE.buyer,
     USER_ROLE.seller,
   ),
-  // validateRequest(AuthValidation.changePasswordValidationSchema),
+  validateRequest(AuthValidation.changePasswordValidationSchema),
   AuthControllers.changePassword,
 );
 
