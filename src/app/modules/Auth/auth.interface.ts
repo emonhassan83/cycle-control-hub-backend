@@ -1,8 +1,8 @@
 export interface TRegisterUser {
-  username: string;
+  name: string;
   email: string;
   password: string;
-  role: 'buyer'| 'seller';
+  role: 'buyer' | 'seller' | 'admin' | 'user';
 }
 
 export interface TLoginUser {

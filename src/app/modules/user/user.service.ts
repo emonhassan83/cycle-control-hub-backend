@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import config from '../../config';
 import AppError from '../../errors/AppError';
 import { createToken } from '../Auth/auth.utils';
-import { TUser } from './user.interface';
+import { TReqUser, TUser } from './user.interface';
 import { User } from './user.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 
@@ -53,23 +53,34 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
-const getAUserFromDB = async (id: string) => {
-  const user = await User.findById(id);
-  console.log({user});
-  
-  if (!user) {
+const getMyProfileFromDB = async (user: TReqUser) => {
+  const UserData = await User.findOne({ email: user.email });
+  if (!UserData) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
   }
 
-  return user;
+  return UserData;
 };
 
 const changeUserRoleFromDB = async (payload: any) => {
   const { userId, role } = payload;
 
+  //* if the user is is not exist
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+  }
+
+  //* checking if the user is already deleted
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
+  }
+
+  //* checking if the user is blocked
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
   }
 
   const updateUserRole = await User.findByIdAndUpdate(
@@ -87,11 +98,54 @@ const changeUserRoleFromDB = async (payload: any) => {
   return updateUserRole;
 };
 
-const updateUserInfoFromDB = async (userId: string, payload: any) => {
+const changeUserStatusFromDB = async (payload: any) => {
+  const { userId, status } = payload;
+
+  //* if the user is is not exist
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
   }
+
+  //* checking if the user is already deleted
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
+  }
+
+  const updateUserStatus = await User.findByIdAndUpdate(
+    userId,
+    { status },
+    { new: true },
+  );
+
+  if (!updateUserStatus) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User not found and failed to update status!',
+    );
+  }
+  return updateUserStatus;
+};
+
+const updateUserInfoFromDB = async (userId: string, payload: any) => {
+   //* if the user is is not exist
+   const user = await User.findById(userId);
+   if (!user) {
+     throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+   }
+ 
+   //* checking if the user is already deleted
+   const isDeleted = user?.isDeleted;
+   if (isDeleted) {
+     throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
+   }
+ 
+   //* checking if the user is blocked
+   const userStatus = user?.status;
+   if (userStatus === 'blocked') {
+     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
+   }
 
   const updatedUser = await User.findByIdAndUpdate(userId, payload, {
     new: true,
@@ -104,6 +158,28 @@ const updateUserInfoFromDB = async (userId: string, payload: any) => {
   }
 
   return updatedUser;
+};
+
+const userSoftDeleteFromDB = async (payload: {userId: string, isDeleted: string}) => {
+  //* if the user is is not exist
+  const user = await User.findById(payload.userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+  }
+
+  const deleteUserStatus = await User.findByIdAndUpdate(
+    payload.userId,
+    { isDeleted: payload.isDeleted },
+    { new: true },
+  );
+
+  if (!deleteUserStatus) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User not found and failed to update status!',
+    );
+  }
+  return deleteUserStatus;
 };
 
 const deleteAUserFromDB = async (userId: string) => {
@@ -126,8 +202,10 @@ const deleteAUserFromDB = async (userId: string) => {
 export const UserService = {
   registerUserIntoDB,
   getAllUsersFromDB,
-  getAUserFromDB,
+  getMyProfileFromDB,
   changeUserRoleFromDB,
+  changeUserStatusFromDB,
   updateUserInfoFromDB,
+  userSoftDeleteFromDB,
   deleteAUserFromDB,
 };

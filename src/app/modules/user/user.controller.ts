@@ -2,10 +2,10 @@ import catchAsync from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import sendResponse from "../../utils/sendResponse";
 import { UserService } from "./user.service";
+import { Request, Response } from "express";
 
 const registerUser = catchAsync(async (req, res) => {
-  const userData = req.body;
-  const result = await UserService.registerUserIntoDB(userData);
+  const result = await UserService.registerUserIntoDB(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -27,10 +27,9 @@ const getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
-const getAUser = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await UserService.getAUserFromDB(id);
-
+const getMyProfile = catchAsync(async (req: Request & { user?: any }, res: Response) => {
+  const result = await UserService.getMyProfileFromDB(req?.user);
+  
   sendResponse(res, {
     success: true,
     statusCode: 200,
@@ -40,13 +39,23 @@ const getAUser = catchAsync(async (req, res) => {
 });
 
 const changeUserRole = catchAsync(async (req, res) => {
-  const userData = req.body;
-  const result = await UserService.changeUserRoleFromDB(userData);
+  const result = await UserService.changeUserRoleFromDB(req.body);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: "User role update successfully!",
+    data: result,
+  });
+});
+
+const changeUserStatus= catchAsync(async (req, res) => {
+  const result = await UserService.changeUserRoleFromDB(req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "User status update successfully!",
     data: result,
   });
 });
@@ -60,6 +69,17 @@ const updateUserInfo = catchAsync(async (req, res) => {
     success: true,
     statusCode: 200,
     message: "User info update successfully!",
+    data: result,
+  });
+});
+
+const softDeleteAUser= catchAsync(async (req, res) => {
+  const result = await UserService.changeUserRoleFromDB(req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "User soft delete successfully!",
     data: result,
   });
 });
@@ -79,8 +99,10 @@ const deleteAUser = catchAsync(async (req, res) => {
 export const UserControllers = {
   registerUser,
   getAllUsers,
-  getAUser,
+  getMyProfile,
   changeUserRole,
+  changeUserStatus,
   updateUserInfo,
+  softDeleteAUser,
   deleteAUser,
 };

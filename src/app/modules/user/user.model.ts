@@ -43,6 +43,7 @@ const userSchema = new Schema<TUser, UserModel>(
     role: {
       type: String,
       enum: UserRoleStatus,
+      default: "user"
     },
     status: {
       type: String,

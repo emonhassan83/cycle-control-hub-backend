@@ -19,6 +19,12 @@ router.patch(
   UserControllers.changeUserRole,
 );
 
+router.patch(
+  '/change-status',
+  auth(USER_ROLE.admin),
+  UserControllers.changeUserStatus,
+);
+
 router.put(
   '/update-user/:id',
   auth(USER_ROLE.admin),
@@ -33,14 +39,14 @@ router.delete(
 
 router.get(
   '/users',
-  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
+  // auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   UserControllers.getAllUsers,
 );
 
 router.get(
   '/:id',
-  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
-  UserControllers.getAUser,
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
+  UserControllers.getMyProfile,
 );
 
 

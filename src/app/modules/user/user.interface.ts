@@ -12,12 +12,20 @@ export interface TUser {
     photoUrl?: string;
     needsPasswordChange: boolean;
     passwordChangedAt?: Date;
-    role: 'admin'| 'buyer'| 'seller';
+    role: 'admin'| 'buyer'| 'seller' | 'user';
     status: 'active' | 'blocked';
     isDeleted: boolean;
     createdAt?: string;
     updatedAt?: string;
 }
+
+export interface TReqUser {
+    _id: string
+    email: string
+    role: string
+    iat: number
+    exp: number
+  }
 
 export interface UserModel extends Model<TUser> {
     isUserExistsByUserEmail(username: string): Promise<TUser>;
