@@ -3,12 +3,14 @@ import cors from 'cors';
 import router from './app/routes';
 import globalErrorHandler from './app/middleware/globalErrorHandler';
 import notFound from './app/middleware/notFound';
+import cookieParser from 'cookie-parser';
 import config from './app/config';
 const app: Application = express();
 
-// parser
+//* parser
 app.use(express.json());
-app.use(cors({origin: config.client_url}));
+app.use(cors({origin: config.client_url, credentials: true}));
+app.use(cookieParser());
 
 // application routes
 app.use('/api', router);
