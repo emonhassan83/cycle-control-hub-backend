@@ -31,6 +31,12 @@ router.put(
   UserControllers.updateUserInfo,
 );
 
+router.patch(
+  '/soft-delete',
+  auth(USER_ROLE.admin),
+  UserControllers.softDeleteAUser,
+);
+
 router.delete(
   '/delete-user/:id',
   auth(USER_ROLE.admin),
@@ -39,7 +45,7 @@ router.delete(
 
 router.get(
   '/users',
-  // auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
   UserControllers.getAllUsers,
 );
 
@@ -48,6 +54,5 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
   UserControllers.getMyProfile,
 );
-
 
 export const UserRoutes = router;
