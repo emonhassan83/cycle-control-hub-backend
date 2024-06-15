@@ -17,10 +17,10 @@ const registerUserIntoDB = async (payload: TUser) => {
     role: result.role,
   };
 
-  const userData = {
-    ...jwtPayload,
-    username: result.username,
-  };
+  // const userData = {
+  //   ...jwtPayload,
+  //   username: result.username,
+  // };
 
   const token = createToken(
     jwtPayload,
@@ -29,7 +29,6 @@ const registerUserIntoDB = async (payload: TUser) => {
   );
 
   return {
-    user: userData,
     token,
   };
 };
@@ -41,23 +40,25 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
-    const result = await usersQuery.modelQuery;
-    const meta = await usersQuery.countTotal();
+  const result = await usersQuery.modelQuery;
+  const meta = await usersQuery.countTotal();
 
   if (!usersQuery) {
-    throw new AppError(httpStatus.NOT_FOUND, "Users not found!");
+    throw new AppError(httpStatus.NOT_FOUND, 'Users not found!');
   }
+
   return {
     meta,
     result,
   };
-}
-
+};
 
 const getAUserFromDB = async (id: string) => {
   const user = await User.findById(id);
+  console.log({user});
+  
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
   }
 
   return user;
@@ -68,9 +69,9 @@ const changeUserRoleFromDB = async (payload: any) => {
 
   const user = await User.findById(userId);
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
   }
-  
+
   const updateUserRole = await User.findByIdAndUpdate(
     userId,
     { role },
@@ -78,7 +79,10 @@ const changeUserRoleFromDB = async (payload: any) => {
   );
 
   if (!updateUserRole) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found and failed to update role!");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User not found and failed to update role!',
+    );
   }
   return updateUserRole;
 };
@@ -86,12 +90,17 @@ const changeUserRoleFromDB = async (payload: any) => {
 const updateUserInfoFromDB = async (userId: string, payload: any) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
   }
 
-  const updatedUser = await User.findByIdAndUpdate(userId, payload, { new: true });
+  const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+  });
   if (!updatedUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found and failed to update!");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User not found and failed to update!',
+    );
   }
 
   return updatedUser;
@@ -100,12 +109,15 @@ const updateUserInfoFromDB = async (userId: string, payload: any) => {
 const deleteAUserFromDB = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
   }
 
   const deleteUser = await User.findByIdAndDelete(userId);
   if (!deleteUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found and failed to delete!");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User not found and failed to delete!',
+    );
   }
 
   return deleteUser;

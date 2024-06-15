@@ -4,9 +4,12 @@ import { USER_ROLE } from "./user.constant";
 
 export interface TUser {
     _id: Types.ObjectId;
-    username: string;
+    name: string;
     email: string;
     password: string;
+    contactNumber: string;
+    address: string;
+    photoUrl?: string;
     needsPasswordChange: boolean;
     passwordChangedAt?: Date;
     role: 'admin'| 'buyer'| 'seller';

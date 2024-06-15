@@ -7,7 +7,7 @@ import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema<TUser, UserModel>(
   {
-    username: {
+    name: {
       type: String,
       required: true,
     },
@@ -20,12 +20,25 @@ const userSchema = new Schema<TUser, UserModel>(
       type: String,
       required: true,
     },
+    contactNumber: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    photoUrl: {
+      type: String,
+      default: null,
+    },
     needsPasswordChange: {
       type: Boolean,
       default: true,
     },
     passwordChangedAt: {
       type: Date,
+      default: new Date(),
     },
     role: {
       type: String,

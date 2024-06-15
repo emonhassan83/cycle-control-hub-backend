@@ -32,15 +32,16 @@ router.delete(
 );
 
 router.get(
+  '/users',
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
+  UserControllers.getAllUsers,
+);
+
+router.get(
   '/:id',
   auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   UserControllers.getAUser,
 );
 
-router.get(
-  '/users',
-  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
-  UserControllers.getAllUsers,
-);
 
 export const UserRoutes = router;

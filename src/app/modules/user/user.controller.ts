@@ -1,17 +1,16 @@
-import { RequestHandler } from "express";
 import catchAsync from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import sendResponse from "../../utils/sendResponse";
 import { UserService } from "./user.service";
 
-const registerUser: RequestHandler = catchAsync(async (req, res) => {
+const registerUser = catchAsync(async (req, res) => {
   const userData = req.body;
   const result = await UserService.registerUserIntoDB(userData);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "User registered successfully",
+    message: "User registered successfully!",
     data: result,
   });
 });
