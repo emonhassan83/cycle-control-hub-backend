@@ -60,7 +60,9 @@ const changeUserRoleValidationSchema = z.object({
     userId: z.string({
       required_error: 'User id is required!',
     }),
-    role: z.enum([...(UserRoleStatus as [string, ...string[]])]),
+    role: z.enum([...(UserRoleStatus as [string, ...string[]])], {
+      required_error: 'User role is required!',
+    }),
   }),
 });
 
@@ -69,7 +71,9 @@ const changeUserStatusValidationSchema = z.object({
     userId: z.string({
       required_error: 'User id is required!',
     }),
-    status: z.enum([...(UserStatus as [string, ...string[]])]),
+    status: z.enum([...(UserStatus as [string, ...string[]])], {
+      required_error: 'User status is required!',
+    }),
   }),
 });
 
@@ -79,7 +83,7 @@ const UserSoftDeleteValidationSchema = z.object({
       required_error: 'User id is required!',
     }),
     isDeleted: z.boolean({
-      required_error: 'isDeleted is required!',
+      required_error: 'isDeleted field is required!',
     }),
   }),
 });
@@ -89,5 +93,5 @@ export const UserValidation = {
   UserUpdateValidationSchema,
   changeUserRoleValidationSchema,
   changeUserStatusValidationSchema,
-  UserSoftDeleteValidationSchema
+  UserSoftDeleteValidationSchema,
 };

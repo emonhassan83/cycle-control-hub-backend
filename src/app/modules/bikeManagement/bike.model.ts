@@ -4,10 +4,10 @@ import { Type } from './bike.constant';
 
 const bikeSchema = new Schema<TBike>(
   {
-    productName: { type: String, required: true },
-    productImage: { type: String, required: true},
+    name: { type: String, required: true },
+    image: { type: String, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User' },
-    productQuantity: { type: Number, required: true },
+    quantity: { type: Number, required: true },
     price: { type: Number, required: true },
     releaseDate: { type: String, required: true },
     brand: { type: String, required: true },
@@ -22,7 +22,7 @@ const bikeSchema = new Schema<TBike>(
     frameMaterial: { type: String, required: true },
     suspensionType: { type: String, required: true },
     manufacturerCountry: { type: String, required: true },
-    isSale: { type: Boolean, default: false}
+    isSale: { type: Boolean, default: false },
   },
   {
     timestamps: true,
@@ -31,12 +31,11 @@ const bikeSchema = new Schema<TBike>(
 
 export const Bike = model<TBike>('Bike', bikeSchema);
 
-
 const saleBikeSchema = new Schema<TBike>(
   {
-    productName: { type: String, required: true },
-    productImage: { type: String, required: true},
-    productQuantity: { type: Number, required: true },
+    name: { type: String, required: true },
+    image: { type: String, required: true },
+    quantity: { type: Number, required: true },
     price: { type: Number, required: true },
     releaseDate: { type: String, required: true },
     brand: { type: String, required: true },
@@ -51,7 +50,7 @@ const saleBikeSchema = new Schema<TBike>(
     frameMaterial: { type: String, required: true },
     suspensionType: { type: String, required: true },
     manufacturerCountry: { type: String, required: true },
-    isSale: { type: Boolean, default: false}
+    isSale: { type: Boolean, default: false },
   },
   {
     timestamps: true,
