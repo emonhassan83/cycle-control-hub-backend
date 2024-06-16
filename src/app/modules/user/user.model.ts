@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import bcrypt from 'bcrypt';
 import config from '../../config';
-import { UserRoleStatus, UserStatus } from './user.constant';
+import { GenderOptions, UserRoleStatus, UserStatus } from './user.constant';
 import { TUser, UserModel } from './user.interface';
 import { Schema, model } from 'mongoose';
 
@@ -53,6 +53,11 @@ const userSchema = new Schema<TUser, UserModel>(
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    gender: {
+      type: String,
+      enum: GenderOptions,
+      default: 'unknown',
     },
   },
   {

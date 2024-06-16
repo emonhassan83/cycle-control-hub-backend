@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UserRoleStatus } from './user.constant';
+import { GenderOptions, UserRoleStatus, UserStatus } from './user.constant';
 
 // Define the Zod validation schema
 const UserValidationSchema = z.object({
@@ -21,7 +21,6 @@ const UserValidationSchema = z.object({
     address: z.string({
       required_error: 'Address is required!',
     }),
-    role: z.enum([...(UserRoleStatus as [string, ...string[]])]).optional(),
   }),
 });
 
@@ -47,11 +46,48 @@ const UserUpdateValidationSchema = z.object({
         required_error: 'Address is required!',
       })
       .optional(),
-    role: z.enum([...(UserRoleStatus as [string, ...string[]])]).optional(),
+    photoUrl: z
+      .string({
+        required_error: 'Photo url is required!',
+      })
+      .optional(),
+    gender: z.enum([...(GenderOptions as [string, ...string[]])]).optional(),
+  }),
+});
+
+const changeUserRoleValidationSchema = z.object({
+  body: z.object({
+    userId: z.string({
+      required_error: 'User id is required!',
+    }),
+    role: z.enum([...(UserRoleStatus as [string, ...string[]])]),
+  }),
+});
+
+const changeUserStatusValidationSchema = z.object({
+  body: z.object({
+    userId: z.string({
+      required_error: 'User id is required!',
+    }),
+    status: z.enum([...(UserStatus as [string, ...string[]])]),
+  }),
+});
+
+const UserSoftDeleteValidationSchema = z.object({
+  body: z.object({
+    userId: z.string({
+      required_error: 'User id is required!',
+    }),
+    isDeleted: z.boolean({
+      required_error: 'isDeleted is required!',
+    }),
   }),
 });
 
 export const UserValidation = {
   UserValidationSchema,
   UserUpdateValidationSchema,
+  changeUserRoleValidationSchema,
+  changeUserStatusValidationSchema,
+  UserSoftDeleteValidationSchema
 };

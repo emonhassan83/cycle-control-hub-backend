@@ -50,7 +50,7 @@ const changeUserRole = catchAsync(async (req, res) => {
 });
 
 const changeUserStatus= catchAsync(async (req, res) => {
-  const result = await UserService.changeUserRoleFromDB(req.body);
+  const result = await UserService.changeUserStatusFromDB(req.body);
 
   sendResponse(res, {
     success: true,
@@ -74,7 +74,7 @@ const updateUserInfo = catchAsync(async (req, res) => {
 });
 
 const softDeleteAUser= catchAsync(async (req, res) => {
-  const result = await UserService.changeUserRoleFromDB(req.body);
+  const result = await UserService.userSoftDeleteFromDB(req.body);
 
   sendResponse(res, {
     success: true,

@@ -8,3 +8,5 @@ export const USER_ROLE = {
   } as const;
 
 export const UserStatus = ['active', 'blocked'];
+
+export const GenderOptions = ['male', 'female', 'unknown'];

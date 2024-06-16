@@ -100,7 +100,7 @@ const changeUserRoleFromDB = async (payload: any) => {
 
 const changeUserStatusFromDB = async (payload: any) => {
   const { userId, status } = payload;
-
+  
   //* if the user is is not exist
   const user = await User.findById(userId);
   if (!user) {
@@ -160,7 +160,7 @@ const updateUserInfoFromDB = async (userId: string, payload: any) => {
   return updatedUser;
 };
 
-const userSoftDeleteFromDB = async (payload: {userId: string, isDeleted: string}) => {
+const userSoftDeleteFromDB = async (payload: {userId: string, isDeleted: boolean}) => {
   //* if the user is is not exist
   const user = await User.findById(payload.userId);
   if (!user) {

@@ -10,6 +10,7 @@ export interface TUser {
     contactNumber: string;
     address: string;
     photoUrl?: string;
+    gender?: string;
     needsPasswordChange: boolean;
     passwordChangedAt?: Date;
     role: 'admin'| 'buyer'| 'seller' | 'user';
