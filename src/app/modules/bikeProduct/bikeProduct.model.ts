@@ -20,4 +20,4 @@ const bikeProductSchema = new Schema<TBikeProduct>(
     },
   );
   
-  export const Bike = model<TBikeProduct>('BikeProduct', bikeProductSchema);
+  export const BikeProduct = model<TBikeProduct>('BikeProduct', bikeProductSchema);
