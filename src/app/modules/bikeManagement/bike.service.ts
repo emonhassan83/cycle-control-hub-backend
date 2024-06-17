@@ -8,19 +8,49 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { BikeSearchableFields } from './bike.constant';
 import mongoose from 'mongoose';
 
-const createBikeIntoDB = async (bike: TBike) => {
-  const result = await SaleBike.create(bike);
-  return result;
+const createBikeIntoDB = async (bike: TBike, userData: JwtPayload) => {
+  //* checking if the user is exist
+  const user = await User.isUserExistsByUserEmail(userData?.email);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
+
+  //* checking if the user is already deleted
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
+  }
+
+  //* checking if the user is blocked
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
+  }
+
+  const addBike = await SaleBike.create(bike);
+  return addBike;
 };
 
 const createSalesBikeIntoDB = async (
   id: string,
-  payload: Partial<any>,
+  payload: Partial<TBike>,
   userData: JwtPayload,
 ) => {
   const user = await User.isUserExistsByUserEmail(userData.email);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
+
+  //* checking if the user is already deleted
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
+  }
+
+  //* checking if the user is blocked
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
   }
 
   const bike = await SaleBike.findById(id);
@@ -29,8 +59,9 @@ const createSalesBikeIntoDB = async (
   }
 
   const {
-    productName,
-    productImage,
+    name,
+    image,
+    description,
     price,
     brand,
     model,
@@ -40,15 +71,16 @@ const createSalesBikeIntoDB = async (
     frameMaterial,
     suspensionType,
     manufacturerCountry,
-    productQuantity,
+    quantity,
   } = bike;
 
   const newBike = new Bike({
-    productName,
-    productImage,
+    name,
+    image,
+    description,
     price,
-    productQuantity: payload.productQuantity,
-    releaseDate: payload.saleDate,
+    quantity: payload.quantity,
+    releaseDate: payload.releaseDate,
     brand,
     model,
     type,
@@ -58,11 +90,11 @@ const createSalesBikeIntoDB = async (
     suspensionType,
     manufacturerCountry,
     isSale: true,
-    seller: payload.sellerName,
+    seller: payload.seller,
   });
 
   //* If input quantity exceeds available stock, throw an error
-  if (payload.productQuantity > productQuantity) {
+  if (payload.quantity! > quantity) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Input quantity cannot exceed the current available stock of the product!',
@@ -77,7 +109,7 @@ const createSalesBikeIntoDB = async (
   //* Update the bike quantity in the database
   const updatedBike = await SaleBike.findByIdAndUpdate(
     id,
-    { $inc: { productQuantity: -payload.productQuantity } },
+    { $inc: { productQuantity: -payload.quantity! } },
     { new: true },
   );
 
@@ -89,7 +121,7 @@ const createSalesBikeIntoDB = async (
   }
 
   //* If product quantity is 0, remove the product from SaleBike collection
-  if (updatedBike.productQuantity === 0) {
+  if (updatedBike.quantity === 0) {
     await SaleBike.findByIdAndDelete(id);
   }
 
@@ -243,7 +275,7 @@ const bulkDeleteBikesIntoDB = async (
 
   const bikesWithIds = await Bike.find({ _id: { $in: objectIds } });
   if (bikesWithIds.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No bike found");
+    throw new AppError(httpStatus.NOT_FOUND, 'No bike found');
   }
 
   //* Delete multiple documents from the Bike collection

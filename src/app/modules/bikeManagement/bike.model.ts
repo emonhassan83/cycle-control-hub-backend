@@ -6,6 +6,7 @@ const bikeSchema = new Schema<TBike>(
   {
     name: { type: String, required: true },
     image: { type: String, required: true },
+    description: { type: String, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User' },
     quantity: { type: Number, required: true },
     price: { type: Number, required: true },
@@ -35,6 +36,7 @@ const saleBikeSchema = new Schema<TBike>(
   {
     name: { type: String, required: true },
     image: { type: String, required: true },
+    description: { type: String, required: true },
     quantity: { type: Number, required: true },
     price: { type: Number, required: true },
     releaseDate: { type: String, required: true },

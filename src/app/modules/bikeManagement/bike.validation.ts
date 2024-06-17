@@ -14,7 +14,7 @@ const createBikeValidationSchema = z.object({
     }),
     seller: z.string({
       required_error: 'Bike seller is required!',
-    }),
+    }).optional(),
     quantity: z.number({
       required_error: 'Bike quantity is required!',
     }),

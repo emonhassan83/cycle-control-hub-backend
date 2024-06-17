@@ -30,7 +30,7 @@ router.put(
 
 router.get(
   "/all-bike",
-   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer),
+   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
    bikeControllers.getAllBike
 );
 

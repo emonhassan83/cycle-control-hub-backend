@@ -5,6 +5,7 @@ export type TType = "road" | "mountain" | "hybrid" | "electric" | "kids";
 export type TBike = {
     name: string;
     image: string;
+    description: string;
     seller?: Types.ObjectId;
     quantity: number;
     price: number;

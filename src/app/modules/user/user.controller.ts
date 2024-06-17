@@ -62,8 +62,7 @@ const changeUserStatus= catchAsync(async (req, res) => {
 
 const updateUserInfo = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const userData = req.body;
-  const result = await UserService.updateUserInfoFromDB(id, userData);
+  const result = await UserService.updateUserInfoFromDB(id, req.body);
 
   sendResponse(res, {
     success: true,

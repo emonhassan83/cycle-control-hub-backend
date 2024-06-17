@@ -5,8 +5,7 @@ import { BikeServices } from './bike.service';
 import catchAsync from '../../utils/catchAsync';
 
 const addBike = catchAsync(async (req: Request, res: Response) => {
-  const newBikeData = req.body;
-  const bike = await BikeServices.createBikeIntoDB(newBikeData);
+  const bike = await BikeServices.createBikeIntoDB(req.body, req.user);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -18,9 +17,8 @@ const addBike = catchAsync(async (req: Request, res: Response) => {
 
 const createSalesBike = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updateBikeData = req.body;
   const bike = await BikeServices.createSalesBikeIntoDB(id,
-    updateBikeData,
+    req.body,
     req.user);
 
   sendResponse(res, {
@@ -81,10 +79,9 @@ const getABike = catchAsync(async (req: Request, res: Response) => {
 
 const updateABike = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updateBikeData = req.body;
   const bike = await BikeServices.updateABikeIntoDB(
     id,
-    updateBikeData,
+    req.body,
     req.user,
   );
 
@@ -109,8 +106,7 @@ const deleteABike = catchAsync(async (req: Request, res: Response) => {
 });
 
 const bulkDeleteBikes = catchAsync(async (req: Request, res: Response) => {
-  const ids  = req.body;
-  const bike = await BikeServices.bulkDeleteBikesIntoDB(ids, req.user);
+  const bike = await BikeServices.bulkDeleteBikesIntoDB(req.body, req.user);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
