@@ -3,17 +3,17 @@ import { TReview } from './review.interface';
 
 const reviewSchema = new Schema<TReview>(
   {
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    bikeId: {
+    bike: {
       type: Schema.Types.ObjectId,
       ref: 'Bike',
       default: null,
     },
-    productId: {
+    product: {
       type: Schema.Types.ObjectId,
       ref: 'BikeProduct',
       default: null,

@@ -1,0 +1,1 @@
+export const reviewSearchableFields = ["userId" ,"bikeId", "productId"];
