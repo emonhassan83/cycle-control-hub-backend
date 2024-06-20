@@ -5,8 +5,7 @@ import { BuyerServices } from './buyerManagement.service';
 import catchAsync from '../../utils/catchAsync';
 
 const purchaseBike = catchAsync(async (req: Request, res: Response) => {
-  const buyerData = req.body;
-  const bike = await BuyerServices.purchaseBikeIntoDB(buyerData);
+  const bike = await BuyerServices.purchaseBikeIntoDB(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
