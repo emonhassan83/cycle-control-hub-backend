@@ -7,6 +7,7 @@ import { CouponRoutes } from '../modules/coupon/coupon.route';
 import { ServiceCategoryRoutes } from '../modules/bikeServiceCategory/serviceCategory.route';
 import { ServiceRoutes } from '../modules/bikeService/bikeService.route';
 import { BikeProductRoutes } from '../modules/bikeProduct/bikeProduct.routes';
+import { ReviewRoutes } from '../modules/review/review.routes';
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
   {
     path: '/service',
     route: ServiceRoutes,
+  },
+  {
+    path: '/review',
+    route: ReviewRoutes,
   },
 ];
 

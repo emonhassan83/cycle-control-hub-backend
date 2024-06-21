@@ -147,14 +147,6 @@ const deleteAProductIntoDB = async (id: string, userData: JwtPayload) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Product is not found!');
   }
 
-  //* If other user delete bike
-  // if (String(user._id) !== String(bike?.seller!._id)) {
-  //   throw new AppError(
-  //     httpStatus.NOT_FOUND,
-  //     'Only this biker seller delete this bike',
-  //   );
-  // }
-
   const result = await BikeProduct.findByIdAndDelete(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Bike product not deleted!');

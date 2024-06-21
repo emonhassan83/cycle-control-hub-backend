@@ -6,6 +6,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { TReview } from './review.interface';
 import { Review } from './review.model';
 import { reviewSearchableFields } from './review.constant';
+import { Bike } from '../bikeManagement/bike.model';
 
 const createReviewIntoDB = async (
   review: TReview,
@@ -48,6 +49,96 @@ const getAllReviewIntoDB = async (query: Record<string, unknown>) => {
     result,
   };
 };
+
+const getReviewsByBikeIntoDB = async (
+    query: Record<string, unknown>,
+    userData: JwtPayload,
+    bikeId: string,
+  ) => {
+    const user = await User.isUserExistsByUserEmail(userData.email);
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    }
+  
+    const bike = await Bike.find({bike: bikeId});
+    if (!bike) {
+        throw new AppError(httpStatus.NOT_FOUND, 'This bike is not found !');
+      }
+
+    const reviewQuery = new QueryBuilder(
+      Review.find({ bike: bikeId }).populate('user'),
+      query,
+    )
+      .search(reviewSearchableFields)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+  
+    const result = await reviewQuery.modelQuery;
+    const meta = await reviewQuery.countTotal();
+  
+    return {
+      meta,
+      result,
+    };
+  };
+const getReviewsByUserIntoDB = async (
+    query: Record<string, unknown>,
+    userData: JwtPayload,
+  ) => {
+    const user = await User.isUserExistsByUserEmail(userData.email);
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    }
+  
+    const userId = user._id;
+    const reviewQuery = new QueryBuilder(
+      Review.find({ user: userId }).populate('user'),
+      query,
+    )
+      .search(reviewSearchableFields)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+  
+    const result = await reviewQuery.modelQuery;
+    const meta = await reviewQuery.countTotal();
+  
+    return {
+      meta,
+      result,
+    };
+  };
+const getReviewsByProductIntoDB = async (
+    query: Record<string, unknown>,
+    userData: JwtPayload,
+    productId: string
+  ) => {
+    const user = await User.isUserExistsByUserEmail(userData.email);
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    }
+  
+    const reviewQuery = new QueryBuilder(
+      Review.find({ product: productId }).populate('user'),
+      query,
+    )
+      .search(reviewSearchableFields)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+  
+    const result = await reviewQuery.modelQuery;
+    const meta = await reviewQuery.countTotal();
+  
+    return {
+      meta,
+      result,
+    };
+  };
 
   const getAReviewIntoDB = async (id: string, userData: JwtPayload) => {
     const user = await User.isUserExistsByUserEmail(userData.email);
@@ -128,6 +219,9 @@ const getAllReviewIntoDB = async (query: Record<string, unknown>) => {
 export const ReviewServices = {
   createReviewIntoDB,
   getAllReviewIntoDB,
+  getReviewsByUserIntoDB,
+  getReviewsByBikeIntoDB,
+  getReviewsByProductIntoDB,
   getAReviewIntoDB,
   updateAReviewIntoDB,
   deleteAReviewIntoDB
