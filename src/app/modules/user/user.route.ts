@@ -29,7 +29,7 @@ router.patch(
 
 router.put(
   '/update-user/:id',
-  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   zodValidationRequest(UserValidation.UserUpdateValidationSchema),
   UserControllers.updateUserInfo,
 );
@@ -49,13 +49,13 @@ router.delete(
 
 router.get(
   '/users',
-  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   UserControllers.getAllUsers,
 );
 
 router.get(
   '/my-profile',
-  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
+  auth(USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.buyer),
   UserControllers.getMyProfile,
 );
 

@@ -32,18 +32,15 @@ const userSchema = new Schema<TUser, UserModel>(
       type: String,
       default: null,
     },
-    needsPasswordChange: {
-      type: Boolean,
-      default: true,
-    },
-    passwordChangedAt: {
-      type: Date,
-      default: new Date(),
+    gender: {
+      type: String,
+      enum: GenderOptions,
+      default: 'unknown',
     },
     role: {
       type: String,
       enum: UserRoleStatus,
-      default: "user"
+      default: "buyer"
     },
     status: {
       type: String,
@@ -54,10 +51,13 @@ const userSchema = new Schema<TUser, UserModel>(
       type: Boolean,
       default: false,
     },
-    gender: {
-      type: String,
-      enum: GenderOptions,
-      default: 'unknown',
+    needsPasswordChange: {
+      type: Boolean,
+      default: true,
+    },
+    passwordChangedAt: {
+      type: Date,
+      default: new Date(),
     },
   },
   {
