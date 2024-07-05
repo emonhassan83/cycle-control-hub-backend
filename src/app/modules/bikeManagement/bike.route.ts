@@ -14,10 +14,11 @@ router.post(
   bikeControllers.addBike
 );
 
-router.put(
-  "/sales-bike/:id",
+//* create sale bike
+router.post(
+  "/create-sale-bike",
   auth(USER_ROLE.admin ,USER_ROLE.seller),
-  zodValidationRequest(bikeValidations.salesBikeValidationSchema),
+  zodValidationRequest(bikeValidations.createSalesBikeValidationSchema),
   bikeControllers.createSalesBike
 );
 
@@ -30,10 +31,11 @@ router.put(
 
 router.get(
   "/all-bike",
-   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
+   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer),
    bikeControllers.getAllBike
 );
 
+//* get all sales bike
 router.get(
   "/all-sales-bike",
    auth(USER_ROLE.admin ,USER_ROLE.seller),
@@ -46,10 +48,11 @@ router.get(
    bikeControllers.getSellerAllBike
 );
 
+//* get a sale bike
 router.get(
-  "/bike/:id",
+  "/sale-bike/:id",
    auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer),
-   bikeControllers.getABike
+   bikeControllers.getASaleBike
 );
 
 router.delete(
@@ -62,6 +65,25 @@ router.delete(
   "/bulk-delete-bikes",
    auth(USER_ROLE.admin ,USER_ROLE.seller),
    bikeControllers.bulkDeleteBikes
+);
+
+router.get(
+  "/seller-sale-bikes",
+   auth(USER_ROLE.admin ,USER_ROLE.seller),
+   bikeControllers.getSellerAllSaleBike
+);
+
+router.put(
+  "/update-sale-bike/:id",
+  auth(USER_ROLE.admin ,USER_ROLE.seller),
+  zodValidationRequest(bikeValidations.updateSalesBikeValidationSchema),
+  bikeControllers.updateASaleBike
+);
+
+router.delete(
+  "/delete-sale-bike/:id",
+   auth(USER_ROLE.admin ,USER_ROLE.seller),
+   bikeControllers.deleteASaleBike
 );
 
 export const BikeRoutes = router;

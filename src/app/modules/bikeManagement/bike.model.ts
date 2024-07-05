@@ -4,10 +4,10 @@ import { Type } from './bike.constant';
 
 const bikeSchema = new Schema<TBike>(
   {
+    seller: { type: Schema.Types.ObjectId, ref: 'User' },
     name: { type: String, required: true },
     image: { type: String, required: true },
     description: { type: String, required: true },
-    seller: { type: Schema.Types.ObjectId, ref: 'User' },
     quantity: { type: Number, required: true },
     price: { type: Number, required: true },
     releaseDate: { type: String, required: true },
@@ -34,6 +34,8 @@ export const Bike = model<TBike>('Bike', bikeSchema);
 
 const saleBikeSchema = new Schema<TBike>(
   {
+    seller: { type: Schema.Types.ObjectId, ref: 'User' },
+    bike: { type: Schema.Types.ObjectId, ref: 'Bike' },
     name: { type: String, required: true },
     image: { type: String, required: true },
     description: { type: String, required: true },

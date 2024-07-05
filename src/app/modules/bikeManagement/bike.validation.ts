@@ -116,9 +116,9 @@ const updateBikeValidationSchema = z.object({
   }),
 });
 
-const salesBikeValidationSchema = z.object({
+const createSalesBikeValidationSchema = z.object({
   body: z.object({
-    seller: z.string({
+    bikeId: z.string({
       required_error: 'Bike seller is required!',
     }),
     quantity: z.number({
@@ -130,8 +130,20 @@ const salesBikeValidationSchema = z.object({
   }),
 });
 
+const updateSalesBikeValidationSchema = z.object({
+  body: z.object({
+    quantity: z.number({
+      required_error: 'Bike quantity is required!',
+    }).optional(),
+    saleDate: z.string({
+      required_error: 'Bike sale date is required!',
+    }).optional(),
+  }),
+});
+
 export const bikeValidations = {
   createBikeValidationSchema,
-  salesBikeValidationSchema,
   updateBikeValidationSchema,
+  createSalesBikeValidationSchema,
+  updateSalesBikeValidationSchema
 };

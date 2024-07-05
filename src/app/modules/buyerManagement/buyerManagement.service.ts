@@ -18,7 +18,7 @@ const purchaseBikeIntoDB = async (buyerStatus: TBuyer) => {
   }
 
   //* Check if there is enough quantity available
-  if (bike.productQuantity < 1) {
+  if (bike.quantity < 1) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Out of stock, This product not available!',
@@ -31,7 +31,7 @@ const purchaseBikeIntoDB = async (buyerStatus: TBuyer) => {
   //* Update the bike quantity in the database
   const updatedBike = await Bike.findByIdAndUpdate(
     bikeId,
-    { $inc: { productQuantity: -1 } },
+    { $inc: { quantity: -1 } },
     { new: true },
   );
 
