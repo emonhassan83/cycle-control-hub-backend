@@ -5,7 +5,7 @@ import { BuyerServices } from './buyerManagement.service';
 import catchAsync from '../../utils/catchAsync';
 
 const purchaseBike = catchAsync(async (req: Request, res: Response) => {
-  const bike = await BuyerServices.purchaseBikeIntoDB(req.body);
+  const bike = await BuyerServices.purchaseBikeIntoDB(req.body, req.user);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -58,7 +58,7 @@ const cancelPurchaseBike = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Cancel purchase bike successfully!',
+    message: 'Bike purchase cancel successfully!',
     data: bike,
   });
 });

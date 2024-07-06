@@ -3,9 +3,7 @@ import { TBuyer } from './buyerManagement.interface';
 
 const buyerSchema = new Schema<TBuyer>(
   {
-    buyerName: { type: String, required: true },
-    buyerEmail: { type: String, required: true },
-    phoneNumber: { type: Number, required: true},
+    buyer: {type: Schema.Types.ObjectId, ref: 'Buyer', required: true},
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     bike: { type: Schema.Types.ObjectId, ref: 'Bike', required: true },
     buyingDate: { type: Date, required: true, default: new Date},

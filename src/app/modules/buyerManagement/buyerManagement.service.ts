@@ -4,15 +4,15 @@ import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 import { TBuyer } from './buyerManagement.interface';
 import { Buyer } from './buyerManagement.model';
-import { Bike } from '../bikeManagement/bike.model';
+import { Bike, SaleBike } from '../bikeManagement/bike.model';
 import { BikeSearchableFields } from '../bikeManagement/bike.constant';
 import QueryBuilder from '../../builder/QueryBuilder';
 
-const purchaseBikeIntoDB = async (buyerStatus: TBuyer) => {
-  const { bike: bikeId /* other buyer info */ } = buyerStatus;
+const purchaseBikeIntoDB = async (buyerData: TBuyer, userData: JwtPayload) => {
+  const { bike: bikeId /* other buyer info */ } = buyerData;
 
   //* Find the bike by its ID
-  const bike = await Bike.findById(bikeId);
+  const bike = await SaleBike.findById(bikeId);
   if (!bike) {
     throw new AppError(httpStatus.NOT_FOUND, 'Bike not found!');
   }
@@ -25,11 +25,13 @@ const purchaseBikeIntoDB = async (buyerStatus: TBuyer) => {
     );
   }
 
+  buyerData.buyer = userData._id; //* add seller to bike model
+
   //* Create a buyer record
-  const result = await Buyer.create(buyerStatus);
+  const result = await Buyer.create(buyerData);
 
   //* Update the bike quantity in the database
-  const updatedBike = await Bike.findByIdAndUpdate(
+  const updatedBike = await SaleBike.findByIdAndUpdate(
     bikeId,
     { $inc: { quantity: -1 } },
     { new: true },
@@ -53,14 +55,14 @@ const confirmPurchaseBikeIntoDB = async (
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
   }
-  
+
   //* Update the bike quantity in the database
   const result = await Buyer.findOneAndUpdate(
-    { bike: bikeId, buyerEmail: userData.email },
+    { bike: bikeId },
     { isConfirmed: true },
     { new: true },
   );
-  
+
   if (!result) {
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
@@ -80,9 +82,8 @@ const viewPurchaseBikeIntoDB = async (
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
   }
 
-  const userEmail = user?.email;
   const bikeQuery = new QueryBuilder(
-    Buyer.find({ buyerEmail: userEmail }).populate('seller bike'),
+    Buyer.find({ buyer: user._id }).populate('buyer seller bike'),
     query,
   )
     .search(BikeSearchableFields)
@@ -109,7 +110,7 @@ const viewAllPurchaseBikeIntoDB = async (
   }
 
   const bikeQuery = new QueryBuilder(
-    Buyer.find().populate('bike').populate('seller'),
+    Buyer.find().populate('buyer bike seller'),
     query,
   )
     .search(BikeSearchableFields)
@@ -134,9 +135,8 @@ const cancelPurchaseBikeIntoDB = async (
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
   }
-  const userEmail = user.email;
-  const buyer = await Buyer.findOne({ buyerEmail: userEmail });
-  
+
+  const buyer = await Buyer.findOne({ buyer: user._id });
   if (!buyer) {
     throw new AppError(
       httpStatus.NOT_FOUND,
@@ -145,15 +145,15 @@ const cancelPurchaseBikeIntoDB = async (
   }
 
   //* Find the bike by its ID
-  const bike = await Bike.findById(buyer?.bike);
-  if (!bike) {
+  const saleBike = await SaleBike.findById(bikeId);
+  if (!saleBike) {
     throw new AppError(httpStatus.NOT_FOUND, 'Bike not found!');
   }
 
-  //* Increment the productQuantity in the database
+  //* Increment the product quantity in the database
   const updatedBike = await Bike.findByIdAndUpdate(
     bikeId,
-    { $inc: { productQuantity: 1 } },
+    { $inc: { quantity: 1 } },
     { new: true },
   );
   if (!updatedBike) {
@@ -164,7 +164,7 @@ const cancelPurchaseBikeIntoDB = async (
   }
 
   //* Delete the buyer record
-  const result = await Buyer.deleteOne({ bike: bikeId, buyerEmail: userEmail });  
+  const result = await Buyer.deleteOne({ bike: bikeId });
   if (result.deletedCount === 0) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to found delete bike!');
   }

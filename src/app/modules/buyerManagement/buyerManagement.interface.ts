@@ -1,12 +1,9 @@
 import { Types } from "mongoose";
 
 export type TBuyer = {
-    buyerName: string;
-    buyerEmail: string;
-    phoneNumber: number;
-    buyingDate: Date;
+    buyer?: Types.ObjectId;
     seller: Types.ObjectId;
     bike: Types.ObjectId;
+    buyingDate: Date;
     isConfirmed?: boolean;
   };
-
