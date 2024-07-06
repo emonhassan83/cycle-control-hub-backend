@@ -13,7 +13,7 @@ app.use(cors({origin: config.client_url, credentials: true}));
 app.use(cookieParser());
 
 // application routes
-app.use('/api', router);
+app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Cycle control hub is running!')
