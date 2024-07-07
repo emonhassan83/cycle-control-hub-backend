@@ -38,7 +38,7 @@ router.get(
 //* get all sales bike
 router.get(
   "/all-sales-bike",
-   auth(USER_ROLE.admin ,USER_ROLE.seller),
+  //  auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer),
    bikeControllers.getSalesBike
 );
 

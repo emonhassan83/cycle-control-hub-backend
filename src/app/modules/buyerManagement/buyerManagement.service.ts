@@ -4,7 +4,7 @@ import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 import { TBuyer } from './buyerManagement.interface';
 import { Buyer } from './buyerManagement.model';
-import { Bike, SaleBike } from '../bikeManagement/bike.model';
+import { SaleBike } from '../bikeManagement/bike.model';
 import { BikeSearchableFields } from '../bikeManagement/bike.constant';
 import QueryBuilder from '../../builder/QueryBuilder';
 
@@ -151,7 +151,7 @@ const cancelPurchaseBikeIntoDB = async (
   }
 
   //* Increment the product quantity in the database
-  const updatedBike = await Bike.findByIdAndUpdate(
+  const updatedBike = await SaleBike.findByIdAndUpdate(
     bikeId,
     { $inc: { quantity: 1 } },
     { new: true },

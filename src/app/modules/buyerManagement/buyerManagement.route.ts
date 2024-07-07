@@ -8,7 +8,7 @@ import { buyerValidations } from "./buyerManagement.validation";
 const router = express.Router();
 
 router.post(
-  "/purchase-product",
+  "/purchase-bike",
    auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer),
   zodValidationRequest(buyerValidations.buyingBikeValidationSchema),
   buyerControllers.purchaseBike

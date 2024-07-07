@@ -6,8 +6,8 @@ import { BuyerRoutes } from '../modules/buyerManagement/buyerManagement.route';
 import { CouponRoutes } from '../modules/coupon/coupon.route';
 import { ServiceCategoryRoutes } from '../modules/bikeServiceCategory/serviceCategory.route';
 import { ServiceRoutes } from '../modules/bikeService/bikeService.route';
-import { BikeProductRoutes } from '../modules/bikeProduct/bikeProduct.routes';
-import { ReviewRoutes } from '../modules/review/review.routes';
+// import { BikeProductRoutes } from '../modules/bikeProduct/bikeProduct.routes';
+// import { ReviewRoutes } from '../modules/review/review.routes';
 
 const router = Router();
 
@@ -24,10 +24,10 @@ const moduleRoutes = [
     path: '/bike',
     route: BikeRoutes,
   },
-  {
-    path: '/product',
-    route: BikeProductRoutes,
-  },
+  // {
+  //   path: '/product',
+  //   route: BikeProductRoutes,
+  // },
   {
     path: '/buyer',
     route: BuyerRoutes,
@@ -44,10 +44,10 @@ const moduleRoutes = [
     path: '/service',
     route: ServiceRoutes,
   },
-  {
-    path: '/review',
-    route: ReviewRoutes,
-  },
+  // {
+  //   path: '/review',
+  //   route: ReviewRoutes,
+  // },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
