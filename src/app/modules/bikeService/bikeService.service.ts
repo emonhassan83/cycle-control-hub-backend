@@ -8,7 +8,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import { User } from '../user/user.model';
 import { Coupon } from '../coupon/coupon.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { Bike } from '../bikeManagement/bike.model';
+import { SaleBike } from '../bikeManagement/bike.model';
 
 const requestAServiceIntoDB = async (
   userData: JwtPayload,
@@ -17,7 +17,7 @@ const requestAServiceIntoDB = async (
   const { bike, service } = payload;
 
   //* Check if the bike dose not exists
-  const purchaseBike = await Bike.findOne({ _id: bike });
+  const purchaseBike = await SaleBike.findOne({ _id: bike });
   if (!purchaseBike) {
     throw new AppError(httpStatus.CONFLICT, `This bike is not found!`);
   }

@@ -175,22 +175,8 @@ const cancelPurchaseBikeIntoDB = async (
 const generateDailyReport = async () => {
   try {
     const currentDate = new Date();
-    const startOfDay = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate(),
-      0,
-      0,
-      0,
-    );
-    const endOfDay = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate(),
-      23,
-      59,
-      59,
-    );
+    const startOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
+    const endOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59);
 
     const dailySales = await Buyer.aggregate([
       {
@@ -203,25 +189,45 @@ const generateDailyReport = async () => {
       },
       {
         $lookup: {
-          from: 'bikes',
+          from: 'salebikes',
           localField: 'bike',
           foreignField: '_id',
           as: 'bikeDetails',
         },
       },
       {
-        $unwind: '$bikeDetails',
+        $unwind: {
+          path: '$bikeDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
           from: 'users',
-          localField: 'bikeDetails.seller',
+          localField: 'seller',
           foreignField: '_id',
           as: 'sellerDetails',
         },
       },
       {
-        $unwind: '$sellerDetails',
+        $unwind: {
+          path: '$sellerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'buyer',
+          foreignField: '_id',
+          as: 'buyerDetails',
+        },
+      },
+      {
+        $unwind: {
+          path: '$buyerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $group: {
@@ -230,9 +236,9 @@ const generateDailyReport = async () => {
           count: { $sum: 1 },
           sales: {
             $push: {
-              buyerName: '$buyer.buyerName',
-              sellerName: '$sellerDetails.username',
-              productName: '$bikeDetails.productName',
+              buyer: '$buyerDetails.name',
+              seller: '$sellerDetails.name',
+              productName: '$bikeDetails.name',
               price: '$bikeDetails.price',
             },
           },
@@ -240,41 +246,28 @@ const generateDailyReport = async () => {
       },
     ]);
 
+    // Log intermediate results
+    console.log('Daily Sales:', JSON.stringify(dailySales, null, 2));
+
     if (dailySales.length > 0) {
       // Round totalSales to 2 decimal places
-      dailySales[0].totalSales = parseFloat(
-        dailySales[0].totalSales.toFixed(2),
-      );
+      dailySales[0].totalSales = parseFloat(dailySales[0].totalSales.toFixed(2));
     }
 
     return dailySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Internal Server Error',
-    );
+    console.error('Error generating daily report:', error);
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
   }
 };
 
 const generateWeeklyReport = async () => {
   try {
     const currentDate = new Date();
-    const startOfWeek = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate() - currentDate.getDay(),
-      0,
-      0,
-      0,
-    );
-    const endOfWeek = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate() - currentDate.getDay() + 6,
-      23,
-      59,
-      59,
-    );
+    const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
+    startOfWeek.setHours(0, 0, 0, 0);
+    const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6));
+    endOfWeek.setHours(23, 59, 59, 999);
 
     const weeklySales = await Buyer.aggregate([
       {
@@ -287,25 +280,45 @@ const generateWeeklyReport = async () => {
       },
       {
         $lookup: {
-          from: 'bikes',
+          from: 'salebikes',
           localField: 'bike',
           foreignField: '_id',
           as: 'bikeDetails',
         },
       },
       {
-        $unwind: '$bikeDetails',
+        $unwind: {
+          path: '$bikeDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
           from: 'users',
-          localField: 'bikeDetails.seller',
+          localField: 'seller',
           foreignField: '_id',
           as: 'sellerDetails',
         },
       },
       {
-        $unwind: '$sellerDetails',
+        $unwind: {
+          path: '$sellerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'buyer',
+          foreignField: '_id',
+          as: 'buyerDetails',
+        },
+      },
+      {
+        $unwind: {
+          path: '$buyerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $group: {
@@ -314,9 +327,9 @@ const generateWeeklyReport = async () => {
           count: { $sum: 1 },
           sales: {
             $push: {
-              buyerName: '$buyer.buyerName',
-              sellerName: '$sellerDetails.username',
-              productName: '$bikeDetails.productName',
+              buyer: '$buyerDetails.name',
+              seller: '$sellerDetails.name',
+              productName: '$bikeDetails.name',
               price: '$bikeDetails.price',
             },
           },
@@ -325,39 +338,23 @@ const generateWeeklyReport = async () => {
     ]);
 
     if (weeklySales.length > 0) {
-      weeklySales[0].totalSales = parseFloat(
-        weeklySales[0].totalSales.toFixed(2),
-      );
+      weeklySales[0].totalSales = parseFloat(weeklySales[0].totalSales.toFixed(2));
     }
 
     return weeklySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Internal Server Error',
-    );
+    console.error('Error generating weekly report:', error);
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
   }
 };
 
 const generateMonthlyReport = async () => {
   try {
     const currentDate = new Date();
-    const startOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1,
-      0,
-      0,
-      0,
-    );
-    const endOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-    );
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    endOfMonth.setHours(23, 59, 59, 999);
 
     const monthlySales = await Buyer.aggregate([
       {
@@ -370,25 +367,45 @@ const generateMonthlyReport = async () => {
       },
       {
         $lookup: {
-          from: 'bikes',
+          from: 'salebikes',
           localField: 'bike',
           foreignField: '_id',
           as: 'bikeDetails',
         },
       },
       {
-        $unwind: '$bikeDetails',
+        $unwind: {
+          path: '$bikeDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
           from: 'users',
-          localField: 'bikeDetails.seller',
+          localField: 'seller',
           foreignField: '_id',
           as: 'sellerDetails',
         },
       },
       {
-        $unwind: '$sellerDetails',
+        $unwind: {
+          path: '$sellerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'buyer',
+          foreignField: '_id',
+          as: 'buyerDetails',
+        },
+      },
+      {
+        $unwind: {
+          path: '$buyerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $group: {
@@ -397,9 +414,9 @@ const generateMonthlyReport = async () => {
           count: { $sum: 1 },
           sales: {
             $push: {
-              buyerName: '$buyer.buyerName',
-              sellerName: '$sellerDetails.username',
-              productName: '$bikeDetails.productName',
+              buyer: '$buyerDetails.name',
+              seller: '$sellerDetails.name',
+              productName: '$bikeDetails.name',
               price: '$bikeDetails.price',
             },
           },
@@ -408,25 +425,23 @@ const generateMonthlyReport = async () => {
     ]);
 
     if (monthlySales.length > 0) {
-      monthlySales[0].totalSales = parseFloat(
-        monthlySales[0].totalSales.toFixed(2),
-      );
+      monthlySales[0].totalSales = parseFloat(monthlySales[0].totalSales.toFixed(2));
     }
 
     return monthlySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Internal Server Error',
-    );
+    console.error('Error generating monthly report:', error);
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
   }
 };
 
 const generateYearlyReport = async () => {
   try {
     const currentDate = new Date();
-    const startOfYear = new Date(currentDate.getFullYear(), 0, 1, 0, 0, 0);
-    const endOfYear = new Date(currentDate.getFullYear(), 12, 0, 23, 59, 59);
+    const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+    startOfYear.setHours(0, 0, 0, 0);
+    const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+    endOfYear.setHours(23, 59, 59, 999);
 
     const yearlySales = await Buyer.aggregate([
       {
@@ -439,25 +454,45 @@ const generateYearlyReport = async () => {
       },
       {
         $lookup: {
-          from: 'bikes',
+          from: 'salebikes',
           localField: 'bike',
           foreignField: '_id',
           as: 'bikeDetails',
         },
       },
       {
-        $unwind: '$bikeDetails',
+        $unwind: {
+          path: '$bikeDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
           from: 'users',
-          localField: 'bikeDetails.seller',
+          localField: 'seller',
           foreignField: '_id',
           as: 'sellerDetails',
         },
       },
       {
-        $unwind: '$sellerDetails',
+        $unwind: {
+          path: '$sellerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'buyer',
+          foreignField: '_id',
+          as: 'buyerDetails',
+        },
+      },
+      {
+        $unwind: {
+          path: '$buyerDetails',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $group: {
@@ -466,9 +501,9 @@ const generateYearlyReport = async () => {
           count: { $sum: 1 },
           sales: {
             $push: {
-              buyerName: '$buyer.buyerName',
-              sellerName: '$sellerDetails.username',
-              productName: '$bikeDetails.productName',
+              buyer: '$buyerDetails.name',
+              seller: '$sellerDetails.name',
+              productName: '$bikeDetails.name',
               price: '$bikeDetails.price',
             },
           },
@@ -477,17 +512,13 @@ const generateYearlyReport = async () => {
     ]);
 
     if (yearlySales.length > 0) {
-      yearlySales[0].totalSales = parseFloat(
-        yearlySales[0].totalSales.toFixed(2),
-      );
+      yearlySales[0].totalSales = parseFloat(yearlySales[0].totalSales.toFixed(2));
     }
 
     return yearlySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Internal Server Error',
-    );
+    console.error('Error generating yearly report:', error);
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
   }
 };
 
