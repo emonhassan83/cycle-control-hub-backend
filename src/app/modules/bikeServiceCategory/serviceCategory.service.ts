@@ -35,8 +35,13 @@ const createBikeServiceCategoryIntoDB = async (
   return serviceCategory;
 };
 
-const getAllBikeServiceCategoriesFromDB = async (query: Record<string, unknown>) => {
-  const serviceCategoriesQuery = new QueryBuilder(ServiceCategory.find().populate('coupon serviceProvider'), query)
+const getAllBikeServiceCategoriesFromDB = async (
+  query: Record<string, unknown>,
+) => {
+  const serviceCategoriesQuery = new QueryBuilder(
+    ServiceCategory.find().populate('coupon serviceProvider'),
+    query,
+  )
     .filter()
     .sort()
     .paginate()
@@ -156,7 +161,11 @@ const deleteABikeServiceCategoryFromDB = async (categoryId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Category service not found!');
   }
 
-  const deleteService = await ServiceCategory.findByIdAndDelete(categoryId);
+  const deleteService = await ServiceCategory.findByIdAndUpdate(
+    categoryId,
+    { isDeleted: true },
+    { new: true },
+  );
   if (!deleteService) {
     throw new AppError(
       httpStatus.NOT_FOUND,

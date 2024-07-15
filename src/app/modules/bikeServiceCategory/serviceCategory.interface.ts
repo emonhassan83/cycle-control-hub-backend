@@ -6,4 +6,5 @@ export type TBikeServiceCategory = {
     serviceDetails: string,
     coupon?: Types.ObjectId,
     serviceProvider: Types.ObjectId,
+    isDeleted: boolean,
 }

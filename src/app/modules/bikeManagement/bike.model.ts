@@ -24,6 +24,7 @@ const bikeSchema = new Schema<TBike>(
     suspensionType: { type: String, required: true },
     manufacturerCountry: { type: String, required: true },
     isSale: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

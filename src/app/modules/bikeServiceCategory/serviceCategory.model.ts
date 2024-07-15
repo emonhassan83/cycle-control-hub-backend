@@ -23,6 +23,10 @@ const bikeServiceCategorySchema = new Schema<TBikeServiceCategory>(
     serviceProvider: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false
     }
   },
   {

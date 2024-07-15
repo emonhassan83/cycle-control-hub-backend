@@ -20,6 +20,7 @@ export type TBike = {
   suspensionType: string;
   manufacturerCountry: string;
   isSale?: boolean;
+  isDeleted?: boolean;
 };
 
 export type TSaleBike = {

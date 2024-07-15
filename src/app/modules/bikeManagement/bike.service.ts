@@ -127,7 +127,11 @@ const deleteABikeIntoDB = async (id: string, userData: JwtPayload) => {
     );
   }
 
-  const result = await Bike.findByIdAndDelete(id);
+  const result = await Bike.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true },
+  );
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Bike not deleted!');
   }
@@ -210,18 +214,15 @@ const createSalesBikeIntoDB = async (
 
   //* If input quantity exceeds available stock, throw an error
   if (payload.quantity! > bike.quantity) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Out stock of the product!',
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, 'Out stock of the product!');
   }
 
-  const result = await newBike.save(); //* save sale bike data in SaleBike 
+  const result = await newBike.save(); //* save sale bike data in SaleBike
 
   //* Update the bike quantity in the database
   const updatedBike = await Bike.findByIdAndUpdate(
     payload.bikeId,
-    { $inc: {quantity: -payload.quantity! } },
+    { $inc: { quantity: -payload.quantity! } },
     { new: true },
   );
 
@@ -309,7 +310,6 @@ const updateASaleBikeIntoDB = async (
   if (!saleBike) {
     throw new AppError(httpStatus.NOT_FOUND, 'Sale bike not found!');
   }
-  
 
   //* If other user update bike
   if (String(user._id) !== String(saleBike?.seller)) {
@@ -330,7 +330,10 @@ const updateASaleBikeIntoDB = async (
 
   const updatedBike = await originalBike.save();
   if (!updatedBike) {
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to update original bike quantity');
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to update original bike quantity',
+    );
   }
 
   const result = await SaleBike.findByIdAndUpdate(id, payload, { new: true });
@@ -351,9 +354,12 @@ const deleteASaleBikeIntoDB = async (id: string, userData: JwtPayload) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Sale bike not found!');
   }
 
-   //* If other user delete bike
-   if (String(user._id) !== String(saleBike.seller)) {
-    throw new AppError(httpStatus.FORBIDDEN, 'Only the seller can delete this bike');
+  //* If other user delete bike
+  if (String(user._id) !== String(saleBike.seller)) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'Only the seller can delete this bike',
+    );
   }
 
   const originalBike = await Bike.findById(saleBike.bike);
@@ -366,7 +372,10 @@ const deleteASaleBikeIntoDB = async (id: string, userData: JwtPayload) => {
 
   const updatedBike = await originalBike.save();
   if (!updatedBike) {
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to update original bike quantity');
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to update original bike quantity',
+    );
   }
 
   //* Delete the sale bike
@@ -390,5 +399,5 @@ export const BikeServices = {
   getASaleBikeIntoDB,
   getSellerAllSaleBikeIntoDB,
   updateASaleBikeIntoDB,
-  deleteASaleBikeIntoDB
+  deleteASaleBikeIntoDB,
 };

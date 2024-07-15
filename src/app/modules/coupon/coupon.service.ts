@@ -89,7 +89,12 @@ const deleteACouponFromDB = async (couponId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Coupon not found!');
   }
 
-  const deleteCoupon = await Coupon.findByIdAndDelete(couponId);
+  const deleteCoupon = await Coupon.findByIdAndUpdate(
+    couponId,
+    { isDeleted: true },
+    { new: true },
+  );
+  
   if (!deleteCoupon) {
     throw new AppError(
       httpStatus.NOT_FOUND,

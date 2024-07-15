@@ -5,4 +5,5 @@ export type TCoupon = {
   discountType: 'percentage' | 'fixed';
   discountAmount: number;
   applicableBikeIds: Array<string>;
+  isDeleted: boolean;
 };
