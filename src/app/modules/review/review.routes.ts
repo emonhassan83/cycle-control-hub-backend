@@ -23,7 +23,7 @@ router.put(
 
 router.get(
   "/all-reviews",
-   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
+   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer),
    ReviewControllers.getAllReview
 );
 

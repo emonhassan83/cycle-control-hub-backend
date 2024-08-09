@@ -94,7 +94,7 @@ const updateABikeIntoDB = async (
   }
 
   //* If other user update bike
-  if (String(user._id) !== String(bike?.seller!._id)) {
+  if (user.role !== "admin" && String(user._id) !== String(bike?.seller?._id)) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'Only this biker seller update this bike',
@@ -120,10 +120,10 @@ const deleteABikeIntoDB = async (id: string, userData: JwtPayload) => {
   }
 
   //* If other user delete bike
-  if (String(user._id) !== String(bike?.seller!._id)) {
+  if (user.role !== "admin" && String(user._id) !== String(bike?.seller?._id)) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      'Only this biker seller delete this bike',
+      'Only this bike seller can delete this bike',
     );
   }
 

@@ -23,7 +23,7 @@ router.put(
 
 router.get(
   "/all-products",
-   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer, USER_ROLE.user),
+   auth(USER_ROLE.admin ,USER_ROLE.seller, USER_ROLE.buyer),
    productControllers.getAllProduct
 );
 

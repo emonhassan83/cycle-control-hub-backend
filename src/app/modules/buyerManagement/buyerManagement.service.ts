@@ -247,7 +247,6 @@ const generateDailyReport = async () => {
     ]);
 
     // Log intermediate results
-    console.log('Daily Sales:', JSON.stringify(dailySales, null, 2));
 
     if (dailySales.length > 0) {
       // Round totalSales to 2 decimal places
