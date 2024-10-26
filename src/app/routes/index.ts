@@ -6,6 +6,7 @@ import { BuyerRoutes } from '../modules/buyerManagement/buyerManagement.route';
 import { CouponRoutes } from '../modules/coupon/coupon.route';
 import { ServiceCategoryRoutes } from '../modules/bikeServiceCategory/serviceCategory.route';
 import { ServiceRoutes } from '../modules/bikeService/bikeService.route';
+import { PaymentRoutes } from '../payment/payment.route';
 // import { BikeProductRoutes } from '../modules/bikeProduct/bikeProduct.routes';
 // import { ReviewRoutes } from '../modules/review/review.routes';
 
@@ -48,6 +49,10 @@ const moduleRoutes = [
   //   path: '/review',
   //   route: ReviewRoutes,
   // },
+  {
+    path: '/payment',
+    route: PaymentRoutes
+},
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
