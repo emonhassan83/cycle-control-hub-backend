@@ -25,10 +25,28 @@ const purchaseBikeIntoDB = async (buyerData: TBuyer, userData: JwtPayload) => {
     );
   }
 
+  const date = new Date();
+
+  const transactionId =
+    'CYCLE-CONTROL-HUB-' +
+    date.getFullYear() +
+    '-' +
+    date.getMonth() +
+    '-' +
+    date.getHours() +
+    '-' +
+    date.getMilliseconds();
+
   buyerData.buyer = userData._id; //* add seller to bike model
+  buyerData.transactionId = transactionId;
+  buyerData.amount = bike.price;
 
   //* Create a buyer record
-  const result = await Buyer.create(buyerData);
+  const result = await Buyer.create({
+    ...buyerData,
+    transactionId: transactionId,
+    amount: bike.price,
+  });
 
   //* Update the bike quantity in the database
   const updatedBike = await SaleBike.findByIdAndUpdate(
@@ -175,8 +193,22 @@ const cancelPurchaseBikeIntoDB = async (
 const generateDailyReport = async () => {
   try {
     const currentDate = new Date();
-    const startOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
-    const endOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59);
+    const startOfDay = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+      0,
+      0,
+      0,
+    );
+    const endOfDay = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+      23,
+      59,
+      59,
+    );
 
     const dailySales = await Buyer.aggregate([
       {
@@ -250,22 +282,31 @@ const generateDailyReport = async () => {
 
     if (dailySales.length > 0) {
       // Round totalSales to 2 decimal places
-      dailySales[0].totalSales = parseFloat(dailySales[0].totalSales.toFixed(2));
+      dailySales[0].totalSales = parseFloat(
+        dailySales[0].totalSales.toFixed(2),
+      );
     }
 
     return dailySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
     console.error('Error generating daily report:', error);
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Internal Server Error',
+    );
   }
 };
 
 const generateWeeklyReport = async () => {
   try {
     const currentDate = new Date();
-    const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
+    const startOfWeek = new Date(
+      currentDate.setDate(currentDate.getDate() - currentDate.getDay()),
+    );
     startOfWeek.setHours(0, 0, 0, 0);
-    const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6));
+    const endOfWeek = new Date(
+      currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6),
+    );
     endOfWeek.setHours(23, 59, 59, 999);
 
     const weeklySales = await Buyer.aggregate([
@@ -337,22 +378,35 @@ const generateWeeklyReport = async () => {
     ]);
 
     if (weeklySales.length > 0) {
-      weeklySales[0].totalSales = parseFloat(weeklySales[0].totalSales.toFixed(2));
+      weeklySales[0].totalSales = parseFloat(
+        weeklySales[0].totalSales.toFixed(2),
+      );
     }
 
     return weeklySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
     console.error('Error generating weekly report:', error);
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Internal Server Error',
+    );
   }
 };
 
 const generateMonthlyReport = async () => {
   try {
     const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1,
+    );
     startOfMonth.setHours(0, 0, 0, 0);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0,
+    );
     endOfMonth.setHours(23, 59, 59, 999);
 
     const monthlySales = await Buyer.aggregate([
@@ -424,13 +478,18 @@ const generateMonthlyReport = async () => {
     ]);
 
     if (monthlySales.length > 0) {
-      monthlySales[0].totalSales = parseFloat(monthlySales[0].totalSales.toFixed(2));
+      monthlySales[0].totalSales = parseFloat(
+        monthlySales[0].totalSales.toFixed(2),
+      );
     }
 
     return monthlySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
     console.error('Error generating monthly report:', error);
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Internal Server Error',
+    );
   }
 };
 
@@ -511,13 +570,18 @@ const generateYearlyReport = async () => {
     ]);
 
     if (yearlySales.length > 0) {
-      yearlySales[0].totalSales = parseFloat(yearlySales[0].totalSales.toFixed(2));
+      yearlySales[0].totalSales = parseFloat(
+        yearlySales[0].totalSales.toFixed(2),
+      );
     }
 
     return yearlySales[0] || { totalSales: 0, count: 0, sales: [] };
   } catch (error) {
     console.error('Error generating yearly report:', error);
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Internal Server Error',
+    );
   }
 };
 
