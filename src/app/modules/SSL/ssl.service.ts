@@ -2,9 +2,9 @@ import axios from 'axios';
 import config from '../../config';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
-import { Buyer } from '../buyerManagement/buyerManagement.model';
+import { IPaymentData } from './ssl.interface';
 
-const initPayment = async (paymentData: any) => {
+const initPayment = async (paymentData: IPaymentData) => {
   try {
     const data = {
       store_id: config.ssl.store_id,

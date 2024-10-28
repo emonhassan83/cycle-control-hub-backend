@@ -39,13 +39,12 @@ const validatePayment = async (payload: any) => {
   //     message: 'Payment Failed!',
   //   }
   // }
-console.log(payload);
 
   const response = payload;
 
   await Buyer.findOneAndUpdate(
     { transactionId: response?.tran_id },
-    { isConfirmed: true, paymentGatewayData: response },
+    { status: "UNPAID", paymentGatewayData: response },
     { new: true },
   );
 
