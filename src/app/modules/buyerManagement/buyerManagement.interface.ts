@@ -1,5 +1,7 @@
 import { Types } from "mongoose";
 
+export type TStatus = 'PAID' | 'UNPAID';
+
 export type TBuyer = {
     buyer?: Types.ObjectId;
     seller: Types.ObjectId;
@@ -8,5 +10,5 @@ export type TBuyer = {
     paymentGatewayData: Record<string, unknown>;
     amount: number;
     buyingDate: Date;
-    isConfirmed?: boolean;
+    status?: TStatus;
   };

@@ -77,7 +77,7 @@ const confirmPurchaseBikeIntoDB = async (
   //* Update the bike quantity in the database
   const result = await Buyer.findOneAndUpdate(
     { bike: bikeId },
-    { isConfirmed: true },
+    { status: "PAID" },
     { new: true },
   );
 
