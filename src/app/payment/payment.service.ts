@@ -9,7 +9,7 @@ const initPayment = async (paymentId: string) => {
   const buyer = await User.findById(paymentData?.buyer);
 
   const initPaymentData = {
-    amount: paymentData?.amount,
+    amount: (paymentData?.amount ?? 0) + 100,
     tran_id: paymentData?.transactionId,
     product_name: bike?.name,
     product_category: bike?.brand,
@@ -26,21 +26,21 @@ const initPayment = async (paymentId: string) => {
 };
 
 const validatePayment = async (payload: any) => {
-  // if (!payload || !payload.status || payload.status !== 'VALID') {
-  //   return {
-  //     message: 'Invalid payment!',
-  //   };
-  // }
+  if (!payload || !payload.status || payload.status !== 'VALID') {
+    return {
+      message: 'Invalid payment!',
+    };
+  }
 
-  // const response = await SSLService.validatePayment(payload);
+  const response = await SSLService.validatePayment(payload);
 
-  // if (response.status !== 'VALID') {
-  //   return {
-  //     message: 'Payment Failed!',
-  //   }
-  // }
+  if (response.status !== 'VALID') {
+    return {
+      message: 'Payment Failed!',
+    }
+  }
 
-  const response = payload;
+  // const response = payload;
 
   await Buyer.findOneAndUpdate(
     { transactionId: response?.tran_id },
