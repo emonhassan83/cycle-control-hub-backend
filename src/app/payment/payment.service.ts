@@ -2,11 +2,24 @@ import { Buyer } from '../modules/buyerManagement/buyerManagement.model';
 import { SaleBike } from '../modules/bikeManagement/bike.model';
 import { User } from '../modules/user/user.model';
 import { SSLService } from '../modules/SSL/ssl.service';
+import AppError from '../errors/AppError';
+import httpStatus from 'http-status';
 
 const initPayment = async (paymentId: string) => {
   const paymentData = await Buyer.findById(paymentId);
+  if (!paymentData) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Payment data not found');
+  }
+
   const bike = await SaleBike.findById(paymentData?.bike);
+  if (!bike) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Bike data not found');
+  }
+
   const buyer = await User.findById(paymentData?.buyer);
+  if (!buyer) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Buyer data not found');
+  }
 
   const initPaymentData = {
     amount: (paymentData?.amount ?? 0) + 100,
