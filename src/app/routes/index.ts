@@ -7,6 +7,7 @@ import { CouponRoutes } from '../modules/coupon/coupon.route';
 import { ServiceCategoryRoutes } from '../modules/bikeServiceCategory/serviceCategory.route';
 import { ServiceRoutes } from '../modules/bikeService/bikeService.route';
 import { PaymentRoutes } from '../payment/payment.route';
+import { MetaRoutes } from '../modules/Meta/Meta.route';
 // import { BikeProductRoutes } from '../modules/bikeProduct/bikeProduct.routes';
 // import { ReviewRoutes } from '../modules/review/review.routes';
 
@@ -45,10 +46,10 @@ const moduleRoutes = [
     path: '/service',
     route: ServiceRoutes,
   },
-  // {
-  //   path: '/review',
-  //   route: ReviewRoutes,
-  // },
+  {
+    path: '/meta',
+    route: MetaRoutes,
+  },
   {
     path: '/payment',
     route: PaymentRoutes
